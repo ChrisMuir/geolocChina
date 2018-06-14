@@ -1,0 +1,16 @@
+Package: geoChina
+Type: Package
+Title: Get Geolocation for Input Chinese Strings
+Version: 0.1.0
+Authors@R: person("Chris", "Muir", email = "chrismuirRVA@gmail.com", role = c("aut", "cre"))
+Description: Provides functions that take Chinese strings as input, and will return 
+    geolocation and geocode data for each input string. Package is optimized for 
+    use with business name strings and address strings.
+License: GPL-3
+Imports: Rcpp
+LinkingTo: Rcpp
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/ChrisMuir/geoChina
+BugReports: https://github.com/ChrisMuir/geoChina/issues
+RoxygenNote: 6.0.1
