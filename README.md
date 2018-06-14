@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-geoChina
-========
+geolocChina
+===========
 
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
@@ -13,7 +13,7 @@ The package is using geo substrings and associated geocodes from [this](http://w
 
 There are other R packages that offer similar functionality, namely [baidumap](https://github.com/badbye/baidumap) and [poster](https://github.com/Ironholds/poster). For more info on geolocating Chinese strings, see [this](https://pdfs.semanticscholar.org/ca9d/2d09d0a2420a7ce398e14ed43f8cd7464705.pdf) 2016 paper on the subject.
 
-Please [report](https://github.com/ChrisMuir/geoChina/issues) issues, comments, or feature requests.
+Please [report](https://github.com/ChrisMuir/geolocChina/issues) issues, comments, or feature requests.
 
 Installation
 ------------
@@ -22,14 +22,14 @@ Install from GitHub
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ChrisMuir/geoChina")
+devtools::install_github("ChrisMuir/geolocChina")
 ```
 
 Example Usage
 -------------
 
 ``` r
-library(geoChina)
+library(geolocChina)
 library(knitr)
 
 terms <- c(

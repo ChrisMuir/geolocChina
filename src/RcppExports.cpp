@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // cpp_geo_locate
 DataFrame cpp_geo_locate(std::vector<std::string> cn_strings, std::vector<std::string> prov_dd_strings, std::vector<int> prov_dd_codes, std::vector<std::string> city_dd_strings, std::vector<int> city_dd_codes, std::vector<std::string> cnty_dd_strings, std::vector<int> cnty_dd_codes, std::vector<std::string> cnty_dd_strings_2015, std::vector<int> cnty_dd_codes_2015);
-RcppExport SEXP _geoChina_cpp_geo_locate(SEXP cn_stringsSEXP, SEXP prov_dd_stringsSEXP, SEXP prov_dd_codesSEXP, SEXP city_dd_stringsSEXP, SEXP city_dd_codesSEXP, SEXP cnty_dd_stringsSEXP, SEXP cnty_dd_codesSEXP, SEXP cnty_dd_strings_2015SEXP, SEXP cnty_dd_codes_2015SEXP) {
+RcppExport SEXP _geolocChina_cpp_geo_locate(SEXP cn_stringsSEXP, SEXP prov_dd_stringsSEXP, SEXP prov_dd_codesSEXP, SEXP city_dd_stringsSEXP, SEXP city_dd_codesSEXP, SEXP cnty_dd_stringsSEXP, SEXP cnty_dd_codesSEXP, SEXP cnty_dd_strings_2015SEXP, SEXP cnty_dd_codes_2015SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,11 +26,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_geoChina_cpp_geo_locate", (DL_FUNC) &_geoChina_cpp_geo_locate, 9},
+    {"_geolocChina_cpp_geo_locate", (DL_FUNC) &_geolocChina_cpp_geo_locate, 9},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_geoChina(DllInfo *dll) {
+RcppExport void R_init_geolocChina(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

@@ -2,4 +2,4 @@
 
 export(geo_locate)
 importFrom(Rcpp,sourceCpp)
-useDynLib(geoChina, .registration = TRUE)
+useDynLib(geolocChina, .registration = TRUE)

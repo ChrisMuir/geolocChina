@@ -13,7 +13,7 @@
 #' @return data frame
 #' @export
 #'
-#' @useDynLib geoChina, .registration = TRUE
+#' @useDynLib geolocChina, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #'
 #' @examples

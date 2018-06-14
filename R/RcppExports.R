@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 cpp_geo_locate <- function(cn_strings, prov_dd_strings, prov_dd_codes, city_dd_strings, city_dd_codes, cnty_dd_strings, cnty_dd_codes, cnty_dd_strings_2015, cnty_dd_codes_2015) {
-    .Call(`_geoChina_cpp_geo_locate`, cn_strings, prov_dd_strings, prov_dd_codes, city_dd_strings, city_dd_codes, cnty_dd_strings, cnty_dd_codes, cnty_dd_strings_2015, cnty_dd_codes_2015)
+    .Call(`_geolocChina_cpp_geo_locate`, cn_strings, prov_dd_strings, prov_dd_codes, city_dd_strings, city_dd_codes, cnty_dd_strings, cnty_dd_codes, cnty_dd_strings_2015, cnty_dd_codes_2015)
 }
 
