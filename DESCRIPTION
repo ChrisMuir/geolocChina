@@ -9,6 +9,7 @@ Description: Provides functions that take Chinese strings as input, and will ret
 License: GPL-3
 Imports: Rcpp
 LinkingTo: Rcpp
+Suggests: knitr
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/ChrisMuir/geoChina

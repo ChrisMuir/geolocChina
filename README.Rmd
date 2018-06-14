@@ -1,5 +1,15 @@
+---
+output:
+  github_document: default
+  html_document: default
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
 geoChina
 ========
 
@@ -20,7 +30,7 @@ Installation
 
 Install from GitHub
 
-``` r
+```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("ChrisMuir/geoChina")
 ```
@@ -28,7 +38,7 @@ devtools::install_github("ChrisMuir/geoChina")
 Example Usage
 -------------
 
-``` r
+```{r}
 library(geoChina)
 library(knitr)
 
@@ -45,15 +55,6 @@ knitr::kable(
   geo_locate(terms)
 )
 ```
-
-| location                            | province | city           | county |  province\_code|  city\_code|  county\_code|
-|:------------------------------------|:---------|:---------------|:-------|---------------:|-----------:|-------------:|
-| 大连市甘井子区南关岭街道姚工街101号 | 辽宁     | 大连           | 甘井子 |              21|        2102|        210211|
-| 浙江省杭州市余杭区径山镇小古城村    | 浙江     | 杭州           | 余杭   |              33|        3301|        330110|
-| 大连御洋食品有限公司                | 辽宁     | 大连           | NA     |              21|        2102|            NA|
-| 徐州雅莲连锁超市有限公司            | 江苏     | 徐州           | NA     |              32|        3203|            NA|
-| 四川省南充市阆中市公园路63号        | 四川     | 南充           | 阆中   |              51|        5113|        511381|
-| 同德县鲜肉蔬菜配送行                | 青海     | 海南藏族自治州 | 同德   |              63|        6325|        632522|
 
 How It Works
 ------------
