@@ -158,7 +158,11 @@ CharacterVector extract_char_vector(List x, std::string name) {
     for(int n = 0; n < curr_x.size(); ++n) {
       if(curr_x_names[n] == name) {
         std::string curr_out = curr_x[n];
-        out[i] = String(curr_out, CE_UTF8);
+        if(curr_out != "NA") {
+          out[i] = String(curr_out, CE_UTF8);
+        } else {
+          out[i] = NA_STRING;
+        }
         break;
       }
     }
