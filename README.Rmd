@@ -19,7 +19,10 @@ R package that takes Chinese location/address stings as input, and returns geolo
 
 The functions are designed to work with business name strings and address strings. For each input string, the following values are returned: `Province`, `City`, `County`, `Provincial geocode`, `City geocode`, and `County geocode`. Values are returned as a tidy data frame.
 
-The package is using geo substrings and associated geocodes from [this](http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/) stats.gov.cn source.
+The package is using geo substrings and associated geocodes from these sources:
+
+* [Administrative-divisions-of-China](https://github.com/modood/Administrative-divisions-of-China) on GitHub, put together by user [modood](https://github.com/modood).
+* [this](http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/) site from stats.gov.cn.
 
 There are other R packages that offer similar functionality, namely [baidumap](https://github.com/badbye/baidumap) and [poster](https://github.com/Ironholds/poster). For more info on geolocating Chinese strings, see [this](https://pdfs.semanticscholar.org/ca9d/2d09d0a2420a7ce398e14ed43f8cd7464705.pdf) 2016 paper on the subject.
 

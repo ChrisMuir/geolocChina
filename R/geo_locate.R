@@ -37,10 +37,11 @@ geo_locate <- function(cn_strings) {
   cnty_idx <- dd$geo_type == "county"
   cnty_dd_strings <- dd[cnty_idx, ]$geo_name
   cnty_dd_codes <- dd[cnty_idx, ]$geo_code
+  
+  dd_2015 <- get("geo_data_2015", envir = cn_env)
 
-  cnty_2015_idx <- dd$geo_type == "county_2015"
-  cnty_dd_strings_2015 <- dd[cnty_2015_idx, ]$geo_name
-  cnty_dd_codes_2015 <- dd[cnty_2015_idx, ]$geo_code
+  cnty_dd_strings_2015 <- dd_2015$geo_name
+  cnty_dd_codes_2015 <- dd_2015$geo_code
 
   cpp_geo_locate(cn_strings, prov_dd_strings, prov_dd_codes, city_dd_strings,
                  city_dd_codes, cnty_dd_strings, cnty_dd_codes,
