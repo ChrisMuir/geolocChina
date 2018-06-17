@@ -14,4 +14,4 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/ChrisMuir/geolocChina
 BugReports: https://github.com/ChrisMuir/geolocChina/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.0.1.9000
