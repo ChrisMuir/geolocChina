@@ -381,7 +381,8 @@ DataFrame cpp_geo_locate(CharacterVector cn_strings,
     Named("county") = extract_char_vector(res, "county"),
     Named("province_code") = extract_int_vector(res, "province_code"),
     Named("city_code") = extract_int_vector(res, "city_code"),
-    Named("county_code") = extract_int_vector(res, "county_code")
+    Named("county_code") = extract_int_vector(res, "county_code"), 
+    Named("stringsAsFactors") = false
   );
 
   return(out);
