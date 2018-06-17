@@ -2,6 +2,9 @@
 using namespace Rcpp;
 
 
+// [[Rcpp::plugins(cpp11)]]
+
+
 // cpp version of base::grepl(pattern, string, fixed = TRUE)
 bool grepl_fixed(std::string pat, std::string term) {
   int pat_len = pat.size();
@@ -142,19 +145,20 @@ int substr_int(int x, int start, int out_len) {
 // https://github.com/rstudio/webinars/blob/master/26-Profiling/Profiling.R#L105
 // Given a named list of char vectors, extract all elements that have a given
 // name, return as a char vector.
-std::vector<std::string> extract_char_vector(List x, std::string name) {
+CharacterVector extract_char_vector(List x, std::string name) {
   int x_len = x.size();
-  std::vector<std::string> out(x_len);
+  CharacterVector out(x_len);
 
   List curr_x;
   CharacterVector curr_x_names;
+  
   for(int i = 0; i < x_len; ++i) {
     curr_x = x[i];
     curr_x_names = curr_x.attr("names");
     for(int n = 0; n < curr_x.size(); ++n) {
       if(curr_x_names[n] == name) {
         std::string curr_out = curr_x[n];
-        out[i] = curr_out;
+        out[i] = String(curr_out, CE_UTF8);
         break;
       }
     }
@@ -345,7 +349,7 @@ List get_locations(std::string cn_str,
 // sends them all through get_locations() in a loop. Returns a data frame
 // of geolocation data related to each input string.
 //[[Rcpp::export]]
-DataFrame cpp_geo_locate(std::vector<std::string> cn_strings,
+DataFrame cpp_geo_locate(CharacterVector cn_strings,
                          std::vector<std::string> prov_dd_strings,
                          std::vector<int> prov_dd_codes,
                          std::vector<std::string> city_dd_strings,
@@ -358,7 +362,7 @@ DataFrame cpp_geo_locate(std::vector<std::string> cn_strings,
   List res(cn_strings_len);
 
   for(int i = 0; i < cn_strings_len; ++i) {
-    std::string curr_cn_str = cn_strings[i];
+    std::string curr_cn_str = as<std::string>(cn_strings[i]);
     List geo_locs = get_locations(curr_cn_str, prov_dd_strings, prov_dd_codes,
                                   city_dd_strings, city_dd_codes,
                                   cnty_dd_strings, cnty_dd_codes,

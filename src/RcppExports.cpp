@@ -6,12 +6,12 @@
 using namespace Rcpp;
 
 // cpp_geo_locate
-DataFrame cpp_geo_locate(std::vector<std::string> cn_strings, std::vector<std::string> prov_dd_strings, std::vector<int> prov_dd_codes, std::vector<std::string> city_dd_strings, std::vector<int> city_dd_codes, std::vector<std::string> cnty_dd_strings, std::vector<int> cnty_dd_codes, std::vector<std::string> cnty_dd_strings_2015, std::vector<int> cnty_dd_codes_2015);
+DataFrame cpp_geo_locate(CharacterVector cn_strings, std::vector<std::string> prov_dd_strings, std::vector<int> prov_dd_codes, std::vector<std::string> city_dd_strings, std::vector<int> city_dd_codes, std::vector<std::string> cnty_dd_strings, std::vector<int> cnty_dd_codes, std::vector<std::string> cnty_dd_strings_2015, std::vector<int> cnty_dd_codes_2015);
 RcppExport SEXP _geolocChina_cpp_geo_locate(SEXP cn_stringsSEXP, SEXP prov_dd_stringsSEXP, SEXP prov_dd_codesSEXP, SEXP city_dd_stringsSEXP, SEXP city_dd_codesSEXP, SEXP cnty_dd_stringsSEXP, SEXP cnty_dd_codesSEXP, SEXP cnty_dd_strings_2015SEXP, SEXP cnty_dd_codes_2015SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type cn_strings(cn_stringsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type cn_strings(cn_stringsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type prov_dd_strings(prov_dd_stringsSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type prov_dd_codes(prov_dd_codesSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type city_dd_strings(city_dd_stringsSEXP);
