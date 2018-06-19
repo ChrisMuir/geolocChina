@@ -65,6 +65,19 @@ if (!dir.exists(extdata_dir)) {
   dir.create(extdata_dir, recursive = TRUE)
 }
 
+# If pkg data file "cn_geocodes_2015.rda" exists, read it in and rbind it 
+# to geo_data.
+geo_2015_file <- system.file("extdata",
+                             "cn_geocodes_2015.rda",
+                             package = "geolocChina")
+
+if (file.exists(geo_2015_file)) {
+  load(geo_2015_file)
+} else {
+  stop("package data file 'cn_geocodes_2015.rda' is missing")
+}
+geo_data <- rbind(geo_data, geo_data_2015)
+
 # Save data to extdata dir.
 save(
   geo_data, 
