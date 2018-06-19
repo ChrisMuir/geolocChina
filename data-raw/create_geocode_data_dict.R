@@ -78,6 +78,12 @@ if (file.exists(geo_2015_file)) {
 }
 geo_data <- rbind(geo_data, geo_data_2015)
 
+# Set data lengths as attributes to the pkg data frame.
+attributes(geo_data)$prov_len <- sum(geo_data$geo_type == "province")
+attributes(geo_data)$city_len <- sum(geo_data$geo_type == "city")
+attributes(geo_data)$cnty_len <- sum(geo_data$geo_type == "county")
+attributes(geo_data)$cnty_2015_len <- sum(geo_data$geo_type == "county_2015")
+
 # Save data to extdata dir.
 save(
   geo_data, 

@@ -378,22 +378,10 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
   std::vector<int> geo_code = geo_data["geo_code"];
   
   // Get counts for each level in col "geo_type".
-  int geo_data_nrow = geo_data.nrow();
-  int prov_len = 0;
-  int city_len = 0;
-  int cnty_len = 0;
-  int cnty_2015_len = 0;
-  for(int i = 0; i < geo_data_nrow; ++i) {
-    if(geo_type[i] == "county") {
-      cnty_len++;
-    } else if (geo_type[i] == "city") {
-      city_len++;
-    } else if (geo_type[i] == "province") {
-      prov_len++;
-    } else if (geo_type[i] == "county_2015") {
-      cnty_2015_len++;
-    }
-  }
+  int prov_len = geo_data.attr("prov_len");
+  int city_len = geo_data.attr("city_len");
+  int cnty_len = geo_data.attr("cnty_len");
+  int cnty_2015_len = geo_data.attr("cnty_2015_len");
   
   // Unpack values from geo_data df into vectors.
   std::vector<std::string> prov_dd_strings(prov_len);
@@ -409,6 +397,8 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
   int city_count = 0;
   int cnty_count = 0;
   int cnty_2015_count = 0;
+  
+  int geo_data_nrow = geo_data.nrow();
   
   for(int i = 0; i < geo_data_nrow; ++i) {
     if(geo_type[i] == "county") {
