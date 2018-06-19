@@ -361,19 +361,75 @@ List get_locations(const std::string &cn_str,
 }
 
 
-// Exported function. Takes a vector of Chinese location/address strings,
-// sends them all through get_locations() in a loop. Returns a data frame
-// of geolocation data related to each input string.
+// Exported function. Takes as input a char vector of Chinese strings, sends 
+// each onethrough get_locations() in a loop (along with the geolocChina 
+// package data). Returns a data frame of geolocation data related to each 
+// input string.
 //[[Rcpp::export]]
-DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
-                         const std::vector<std::string> &prov_dd_strings,
-                         const std::vector<int> &prov_dd_codes,
-                         const std::vector<std::string> &city_dd_strings,
-                         const std::vector<int> &city_dd_codes,
-                         const std::vector<std::string> &cnty_dd_strings,
-                         const std::vector<int> &cnty_dd_codes,
-                         const std::vector<std::string> &cnty_dd_strings_2015,
-                         const std::vector<int> &cnty_dd_codes_2015) {
+DataFrame cpp_geo_locate(const CharacterVector &cn_strings, 
+                         const Environment &cn_env) {
+  
+  // Get package data frame from cn_env.
+  DataFrame geo_data = cn_env.get("geo_data");
+  
+  // Unpack cols of data from geo_data df.
+  std::vector<std::string> geo_type = geo_data["geo_type"];
+  std::vector<std::string> geo_name = geo_data["geo_name"];
+  std::vector<int> geo_code = geo_data["geo_code"];
+  
+  // Get counts for each level in col "geo_type".
+  int geo_data_nrow = geo_data.nrow();
+  int prov_len = 0;
+  int city_len = 0;
+  int cnty_len = 0;
+  int cnty_2015_len = 0;
+  for(int i = 0; i < geo_data_nrow; ++i) {
+    if(geo_type[i] == "county") {
+      cnty_len++;
+    } else if (geo_type[i] == "city") {
+      city_len++;
+    } else if (geo_type[i] == "province") {
+      prov_len++;
+    } else if (geo_type[i] == "county_2015") {
+      cnty_2015_len++;
+    }
+  }
+  
+  // Unpack values from geo_data df into vectors.
+  std::vector<std::string> prov_dd_strings(prov_len);
+  std::vector<int> prov_dd_codes(prov_len);
+  std::vector<std::string> city_dd_strings(city_len);
+  std::vector<int> city_dd_codes(city_len);
+  std::vector<std::string> cnty_dd_strings(cnty_len);
+  std::vector<int> cnty_dd_codes(cnty_len);
+  std::vector<std::string> cnty_dd_strings_2015(cnty_2015_len);
+  std::vector<int> cnty_dd_codes_2015(cnty_2015_len);
+  
+  int prov_count = 0;
+  int city_count = 0;
+  int cnty_count = 0;
+  int cnty_2015_count = 0;
+  
+  for(int i = 0; i < geo_data_nrow; ++i) {
+    if(geo_type[i] == "county") {
+      cnty_dd_strings[cnty_count] = geo_name[i];
+      cnty_dd_codes[cnty_count] = geo_code[i];
+      cnty_count++;
+    } else if (geo_type[i] == "city") {
+      city_dd_strings[city_count] = geo_name[i];
+      city_dd_codes[city_count] = geo_code[i];
+      city_count++;
+    } else if (geo_type[i] == "province") {
+      prov_dd_strings[prov_count] = geo_name[i];
+      prov_dd_codes[prov_count] = geo_code[i];
+      prov_count++;
+    } else if (geo_type[i] == "county_2015") {
+      cnty_dd_strings_2015[cnty_2015_count] = geo_name[i];
+      cnty_dd_codes_2015[cnty_2015_count] = geo_code[i];
+      cnty_2015_count++;
+    }
+  }
+  
   int cn_strings_len = cn_strings.size();
   List res(cn_strings_len);
   
@@ -394,7 +450,7 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
                                   city_code_set);
     res[i] = geo_locs;
   }
-
+  
   DataFrame out = DataFrame::create(
     Named("location") = cn_strings,
     Named("province") = extract_char_vector(res, "province"),
@@ -405,6 +461,6 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
     Named("county_code") = extract_int_vector(res, "county_code"), 
     Named("stringsAsFactors") = false
   );
-
+  
   return(out);
 }

@@ -22,28 +22,5 @@
 #'              "成都高梁红餐饮管理有限公司"))
 geo_locate <- function(cn_strings) {
   stopifnot(is.character(cn_strings))
-
-  # Unpack cols from the geo_data data dictionary.
-  dd <- get("geo_data", envir = cn_env)
-
-  prov_idx <- dd$geo_type == "province"
-  prov_dd_strings <- dd[prov_idx, ]$geo_name
-  prov_dd_codes <- dd[prov_idx, ]$geo_code
-
-  city_idx <- dd$geo_type == "city"
-  city_dd_strings <- dd[city_idx, ]$geo_name
-  city_dd_codes <- dd[city_idx, ]$geo_code
-
-  cnty_idx <- dd$geo_type == "county"
-  cnty_dd_strings <- dd[cnty_idx, ]$geo_name
-  cnty_dd_codes <- dd[cnty_idx, ]$geo_code
-  
-  dd_2015 <- get("geo_data_2015", envir = cn_env)
-
-  cnty_dd_strings_2015 <- dd_2015$geo_name
-  cnty_dd_codes_2015 <- dd_2015$geo_code
-
-  cpp_geo_locate(cn_strings, prov_dd_strings, prov_dd_codes, city_dd_strings,
-                 city_dd_codes, cnty_dd_strings, cnty_dd_codes,
-                 cnty_dd_strings_2015, cnty_dd_codes_2015)
+  cpp_geo_locate(cn_strings, cn_env)
 }
