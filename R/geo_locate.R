@@ -1,16 +1,19 @@
 #' Get Chinese Geolocation Data
 #'
 #' Get Chinese geolocation info as a data frame. Takes as input a char vector
-#' of Chinese location strings, returns geolocation and geocode data. For each 
-#' input string the following variables are created: province, city, county, 
-#' province_code, city_code, county_code.
+#' of Chinese location strings, returns geolocation and geocode data. This 
+#' package uses Chinese geolocation data from this GitHub repo:
+#' \url{https://github.com/modood/Administrative-divisions-of-China}
 #'
 #' @param cn_strings char vector, Chinese locations.
 #'
 #' @details Function is designed to be used with Chinese addresses and
 #'  business names.
 #'
-#' @return data frame
+#' @return data frame. For each input string, the following values are 
+#'  returned: Province, City, County, Provincial geocode, City geocode, and 
+#'  County geocode
+#' 
 #' @export
 #'
 #' @useDynLib geolocChina, .registration = TRUE

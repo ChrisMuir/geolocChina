@@ -10,13 +10,15 @@ geo_locate(cn_strings)
 \item{cn_strings}{char vector, Chinese locations.}
 }
 \value{
-data frame
+data frame. For each input string, the following values are 
+ returned: Province, City, County, Provincial geocode, City geocode, and 
+ County geocode
 }
 \description{
 Get Chinese geolocation info as a data frame. Takes as input a char vector
-of Chinese location strings, returns geolocation and geocode data. For each 
-input string the following variables are created: province, city, county, 
-province_code, city_code, county_code.
+of Chinese location strings, returns geolocation and geocode data. This 
+package uses Chinese geolocation data from this GitHub repo:
+\url{https://github.com/modood/Administrative-divisions-of-China}
 }
 \details{
 Function is designed to be used with Chinese addresses and
