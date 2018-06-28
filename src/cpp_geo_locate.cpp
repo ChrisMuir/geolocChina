@@ -141,58 +141,39 @@ int substr_int(int x, int start, int out_len) {
 }
 
 
-// Idea taken from:
-// https://github.com/rstudio/webinars/blob/master/26-Profiling/Profiling.R#L105
-// Given a named list of char vectors, extract all elements that have a given
-// name, return as a char vector.
-CharacterVector extract_char_vector(const List &x, std::string name) {
+// Given a list of lists, extract the element with index == idx  
+// from each inner list, return as a char vector.
+CharacterVector extract_char_vector(const List &x, int idx) {
   int x_len = x.size();
   CharacterVector out(x_len);
-
-  List curr_x;
-  CharacterVector curr_x_names;
   
+  List curr_x;
   for(int i = 0; i < x_len; ++i) {
     curr_x = x[i];
-    curr_x_names = curr_x.attr("names");
-    for(int n = 0; n < curr_x.size(); ++n) {
-      if(curr_x_names[n] == name) {
-        std::string curr_out = curr_x[n];
-        if(curr_out != "NA") {
-          out[i] = String(curr_out, CE_UTF8);
-        } else {
-          out[i] = NA_STRING;
-        }
-        break;
-      }
+    std::string curr_out = curr_x[idx];
+    if(curr_out != "NA") {
+      out[i] = String(curr_out, CE_UTF8);
+    } else {
+      out[i] = NA_STRING;
     }
   }
-
+  
   return(out);
 }
 
-// Idea taken from:
-// https://github.com/rstudio/webinars/blob/master/26-Profiling/Profiling.R#L105
-// Given a named list of int vectors, extract all elements that have a given
-// name, return as an int vector.
-std::vector<int> extract_int_vector(const List &x, std::string name) {
+
+// Given a list of lists, extract the element with index == idx 
+// from each inner list, return as an int vector.
+std::vector<int> extract_int_vector(const List &x, int idx) {
   int x_len = x.size();
   std::vector<int> out(x_len);
-
+  
   List curr_x;
-  CharacterVector curr_x_names;
   for(int i = 0; i < x_len; ++i) {
     curr_x = x[i];
-    curr_x_names = curr_x.attr("names");
-    for(int n = 0; n < curr_x.size(); ++n) {
-      if(curr_x_names[n] == name) {
-        int curr_out = curr_x[n];
-        out[i] = curr_out;
-        break;
-      }
-    }
+    out[i] = curr_x[idx];
   }
-
+  
   return(out);
 }
 
@@ -249,12 +230,8 @@ List get_locations(const std::string &cn_str,
                    const std::vector<int> &cnty_dd_codes_2015, 
                    const std::unordered_set<int> &city_code_set) {
 
-  List out = List::create(Named("province") = NA_STRING,
-                          Named("city") = NA_STRING,
-                          Named("county") = NA_STRING,
-                          Named("province_code") = NA_INTEGER,
-                          Named("city_code") = NA_INTEGER,
-                          Named("county_code") = NA_INTEGER);
+  List out = List::create(NA_STRING, NA_STRING, NA_STRING, NA_INTEGER, 
+                          NA_INTEGER, NA_INTEGER);
 
   // TODO: create is_empty(), to check for NA and missing values. Run check
   // here.
@@ -264,9 +241,9 @@ List get_locations(const std::string &cn_str,
   std::vector<std::string> provs = substring_lookup(cn_str, prov_dd_strings);
   if(provs.size() > 0) {
     std::string prov = get_earliest_substr(cn_str, provs);
-    out["province"] = prov;
+    out[0] = prov;
     curr_prov_code = as_geocode(prov, prov_dd_strings, prov_dd_codes);
-    out["province_code"] = curr_prov_code;
+    out[3] = curr_prov_code;
   }
 
   // Look for a City match.
@@ -281,9 +258,9 @@ List get_locations(const std::string &cn_str,
   int curr_city_code = NA_INTEGER;
   if(cities.size() > 0) {
     std::string city = get_earliest_substr(cn_str, cities);
-    out["city"] = city;
+    out[1] = city;
     curr_city_code = as_geocode(city, city_dd_strings, city_dd_codes);
-    out["city_code"] = curr_city_code;
+    out[4] = curr_city_code;
   }
 
   // Look for County match.
@@ -301,9 +278,9 @@ List get_locations(const std::string &cn_str,
   int curr_cnty_code = NA_INTEGER;
   if (cntys.size() > 0) {
     std::string county = get_earliest_substr(cn_str, cntys);
-    out["county"] = county;
+    out[2] = county;
     curr_cnty_code = as_geocode(county, cnty_dd_strings, cnty_dd_codes);
-    out["county_code"] = curr_cnty_code;
+    out[5] = curr_cnty_code;
   }
 
   //// Try to fill in any missing codes.
@@ -324,8 +301,8 @@ List get_locations(const std::string &cn_str,
       if(city_code_set.find(curr_city_code) != city_code_set.end()) {
         std::string city = as_geostring(curr_city_code, city_dd_strings,
                                         city_dd_codes);
-        out["city"] = city;
-        out["city_code"] = curr_city_code;
+        out[1] = city;
+        out[4] = curr_city_code;
       }
 
 
@@ -340,10 +317,10 @@ List get_locations(const std::string &cn_str,
     // If curr_city_code appears in the city_code_set, use it and its 
     // associated city string as outputs.
     if(city_code_set.find(curr_city_code) != city_code_set.end()) {
-      out["city_code"] = curr_city_code;
+      out[4] = curr_city_code;
       std::string city = as_geostring(curr_city_code, city_dd_strings,
                                       city_dd_codes);
-      out["city"] = city;
+      out[1] = city;
     }
   }
 
@@ -351,10 +328,10 @@ List get_locations(const std::string &cn_str,
   // two digits from the City code.
   if (curr_city_code != NA_INTEGER and curr_prov_code == NA_INTEGER) {
     curr_prov_code = substr_int(curr_city_code, 0, 2);
-    out["province_code"] = curr_prov_code;
+    out[3] = curr_prov_code;
     std::string prov = as_geostring(curr_prov_code, prov_dd_strings,
                                     prov_dd_codes);
-    out["province"] = prov;
+    out[0] = prov;
   }
 
   return(out);
@@ -362,7 +339,7 @@ List get_locations(const std::string &cn_str,
 
 
 // Exported function. Takes as input a char vector of Chinese strings, sends 
-// each onethrough get_locations() in a loop (along with the geolocChina 
+// each one through get_locations() in a loop (along with the geolocChina 
 // package data). Returns a data frame of geolocation data related to each 
 // input string.
 //[[Rcpp::export]]
@@ -443,12 +420,13 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings,
   
   DataFrame out = DataFrame::create(
     Named("location") = cn_strings,
-    Named("province") = extract_char_vector(res, "province"),
-    Named("city") = extract_char_vector(res, "city"),
-    Named("county") = extract_char_vector(res, "county"),
-    Named("province_code") = extract_int_vector(res, "province_code"),
-    Named("city_code") = extract_int_vector(res, "city_code"),
-    Named("county_code") = extract_int_vector(res, "county_code"), 
+    
+    Named("province") = extract_char_vector(res, 0),
+    Named("city") = extract_char_vector(res, 1),
+    Named("county") = extract_char_vector(res, 2),
+    Named("province_code") = extract_int_vector(res, 3),
+    Named("city_code") = extract_int_vector(res, 4),
+    Named("county_code") = extract_int_vector(res, 5), 
     Named("stringsAsFactors") = false
   );
   
