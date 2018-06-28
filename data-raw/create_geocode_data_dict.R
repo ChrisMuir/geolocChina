@@ -10,6 +10,7 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   httr::content("text", encoding = "UTF-8") %>% 
   jsonlite::fromJSON() %>% 
   `colnames<-`(c("geo_code", "geo_name"))
+Sys.sleep(2)
 res <- res[!nchar(res$geo_name) < 2, ]
 res$geo_code <- as.integer(res$geo_code)
 res$geo_type <- "province"
@@ -28,6 +29,7 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   jsonlite::fromJSON() %>% 
   .[, c("code", "name")] %>% 
   `colnames<-`(c("geo_code", "geo_name"))
+Sys.sleep(2)
 res <- res[!nchar(res$geo_name) < 2, ]
 res$geo_code <- as.integer(res$geo_code)
 res$geo_type <- "city"
@@ -46,6 +48,7 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   jsonlite::fromJSON() %>% 
   .[, c("code", "name")] %>% 
   `colnames<-`(c("geo_code", "geo_name"))
+Sys.sleep(2)
 res <- res[!nchar(res$geo_name) < 2, ]
 res$geo_code <- as.integer(res$geo_code)
 res$geo_type <- "county"
