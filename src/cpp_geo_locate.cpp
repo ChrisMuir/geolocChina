@@ -1,8 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
-
-
-// [[Rcpp::plugins(cpp11)]]
+#include "geolocChina.h"
 
 
 // cpp version of base::grepl(pattern, string, fixed = TRUE)
@@ -216,26 +214,33 @@ std::string as_geostring(int code,
 }
 
 
+// Function that returns a data frame filled with NA values (this will be 
+// used only when the input char vector is made up of all NA values).
+DataFrame get_na_dataframe(const int &x) {
+  CharacterVector na_strings = CharacterVector(x, NA_STRING);
+  IntegerVector na_ints = IntegerVector(x, NA_INTEGER);
+  DataFrame out = DataFrame::create(
+    Named("location") = na_strings,
+    Named("province") = na_strings,
+    Named("city") = na_strings,
+    Named("county") = na_strings,
+    Named("province_code") = na_ints,
+    Named("city_code") = na_ints,
+    Named("county_code") = na_ints, 
+    Named("stringsAsFactors") = false
+  );
+  
+  return(out);
+}
+
+
 // Given an input Chinese location/address string, determine the Province,
 // City, and County of the input string (and the assoicated geocodes for all
 // three), return the six values as a named list.
-List get_locations(const std::string &cn_str,
-                   const std::vector<std::string> &prov_dd_strings,
-                   const std::vector<int> &prov_dd_codes,
-                   const std::vector<std::string> &city_dd_strings,
-                   const std::vector<int> &city_dd_codes,
-                   const std::vector<std::string> &cnty_dd_strings,
-                   const std::vector<int> &cnty_dd_codes,
-                   const std::vector<std::string> &cnty_dd_strings_2015,
-                   const std::vector<int> &cnty_dd_codes_2015, 
-                   const std::unordered_set<int> &city_code_set) {
+List get_locations(const std::string &cn_str) {
 
-  List out = List::create(NA_STRING, NA_STRING, NA_STRING, NA_INTEGER, 
-                          NA_INTEGER, NA_INTEGER);
-
-  // TODO: create is_empty(), to check for NA and missing values. Run check
-  // here.
-
+  List out = clone(na_res);
+  
   // Look for a Province match.
   int curr_prov_code = NA_INTEGER;
   std::vector<std::string> provs = substring_lookup(cn_str, prov_dd_strings);
@@ -343,84 +348,33 @@ List get_locations(const std::string &cn_str,
 // package data). Returns a data frame of geolocation data related to each 
 // input string.
 //[[Rcpp::export]]
-DataFrame cpp_geo_locate(const CharacterVector &cn_strings, 
-                         const Environment &cn_env) {
-  
-  // Get package data frame from cn_env.
-  DataFrame geo_data = cn_env.get("geo_data");
-  
-  // Unpack cols of data from geo_data df.
-  std::vector<std::string> geo_type = geo_data["geo_type"];
-  std::vector<std::string> geo_name = geo_data["geo_name"];
-  std::vector<int> geo_code = geo_data["geo_code"];
-  
-  // Get counts for each level in col "geo_type".
-  int prov_len = geo_data.attr("prov_len");
-  int city_len = geo_data.attr("city_len");
-  int cnty_len = geo_data.attr("cnty_len");
-  int cnty_2015_len = geo_data.attr("cnty_2015_len");
-  
-  // Unpack values from geo_data df into vectors.
-  std::vector<std::string> prov_dd_strings(prov_len);
-  std::vector<int> prov_dd_codes(prov_len);
-  std::vector<std::string> city_dd_strings(city_len);
-  std::vector<int> city_dd_codes(city_len);
-  std::vector<std::string> cnty_dd_strings(cnty_len);
-  std::vector<int> cnty_dd_codes(cnty_len);
-  std::vector<std::string> cnty_dd_strings_2015(cnty_2015_len);
-  std::vector<int> cnty_dd_codes_2015(cnty_2015_len);
-  
-  int prov_count = 0;
-  int city_count = 0;
-  int cnty_count = 0;
-  int cnty_2015_count = 0;
-  
-  int geo_data_nrow = geo_data.nrow();
-  
-  for(int i = 0; i < geo_data_nrow; ++i) {
-    if(geo_type[i] == "county") {
-      cnty_dd_strings[cnty_count] = geo_name[i];
-      cnty_dd_codes[cnty_count] = geo_code[i];
-      cnty_count++;
-    } else if (geo_type[i] == "city") {
-      city_dd_strings[city_count] = geo_name[i];
-      city_dd_codes[city_count] = geo_code[i];
-      city_count++;
-    } else if (geo_type[i] == "province") {
-      prov_dd_strings[prov_count] = geo_name[i];
-      prov_dd_codes[prov_count] = geo_code[i];
-      prov_count++;
-    } else if (geo_type[i] == "county_2015") {
-      cnty_dd_strings_2015[cnty_2015_count] = geo_name[i];
-      cnty_dd_codes_2015[cnty_2015_count] = geo_code[i];
-      cnty_2015_count++;
-    }
-  }
+DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
   int cn_strings_len = cn_strings.size();
-  List res(cn_strings_len);
   
-  // Create set of city codes, to use as a reference when attempting to assign 
-  // a city code from a matched county code.
-  std::unordered_set<int> city_code_set;
-  for(int n = 0; n < city_dd_codes.size(); ++n) {
-    city_code_set.insert(city_dd_codes[n]);
+  // If input cn_strings is all NA values, then return a data frame full of NA
+  // values.
+  if(is_true(all(is_na(cn_strings)))) {
+    return(get_na_dataframe(cn_strings_len));
   }
+  
+  List res(cn_strings_len);
+  std::string curr_cn_str;
+  List geo_locs;
   
   // Loop over cn_strings, get geolocations and geocodes for each string.
   for(int i = 0; i < cn_strings_len; ++i) {
-    std::string curr_cn_str = as<std::string>(cn_strings[i]);
-    List geo_locs = get_locations(curr_cn_str, prov_dd_strings, prov_dd_codes,
-                                  city_dd_strings, city_dd_codes,
-                                  cnty_dd_strings, cnty_dd_codes,
-                                  cnty_dd_strings_2015, cnty_dd_codes_2015, 
-                                  city_code_set);
-    res[i] = geo_locs;
+    if(CharacterVector::is_na(cn_strings[i])) {
+      res[i] = na_res;
+    } else {
+      curr_cn_str = as<std::string>(cn_strings[i]);
+      geo_locs = get_locations(curr_cn_str);
+      res[i] = geo_locs;
+    }
   }
   
   DataFrame out = DataFrame::create(
     Named("location") = cn_strings,
-    
     Named("province") = extract_char_vector(res, 0),
     Named("city") = extract_char_vector(res, 1),
     Named("county") = extract_char_vector(res, 2),

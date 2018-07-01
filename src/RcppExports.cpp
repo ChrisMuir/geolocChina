@@ -6,20 +6,19 @@
 using namespace Rcpp;
 
 // cpp_geo_locate
-DataFrame cpp_geo_locate(const CharacterVector& cn_strings, const Environment& cn_env);
-RcppExport SEXP _geolocChina_cpp_geo_locate(SEXP cn_stringsSEXP, SEXP cn_envSEXP) {
+DataFrame cpp_geo_locate(const CharacterVector& cn_strings);
+RcppExport SEXP _geolocChina_cpp_geo_locate(SEXP cn_stringsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const CharacterVector& >::type cn_strings(cn_stringsSEXP);
-    Rcpp::traits::input_parameter< const Environment& >::type cn_env(cn_envSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_geo_locate(cn_strings, cn_env));
+    rcpp_result_gen = Rcpp::wrap(cpp_geo_locate(cn_strings));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_geolocChina_cpp_geo_locate", (DL_FUNC) &_geolocChina_cpp_geo_locate, 2},
+    {"_geolocChina_cpp_geo_locate", (DL_FUNC) &_geolocChina_cpp_geo_locate, 1},
     {NULL, NULL, 0}
 };
 

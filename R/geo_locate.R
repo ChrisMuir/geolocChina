@@ -25,5 +25,5 @@
 #'              "成都高梁红餐饮管理有限公司"))
 geo_locate <- function(cn_strings) {
   stopifnot(is.character(cn_strings))
-  cpp_geo_locate(cn_strings, cn_env)
+  cpp_geo_locate(cn_strings)
 }

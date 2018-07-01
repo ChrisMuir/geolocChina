@@ -3,8 +3,8 @@ cn_env <- new.env()
 
 # Load package data.
 geo_data_file <- system.file("extdata",
-                              "cn_geocodes.rda",
-                              package = "geolocChina")
+                             "cn_geocodes.rda",
+                             package = "geolocChina")
 
 if (file.exists(geo_data_file)) {
   load(geo_data_file, envir = cn_env)
