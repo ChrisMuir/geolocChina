@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 
 // cpp version of base::grepl(pattern, string, fixed = TRUE)
-bool grepl_fixed(std::string pat, std::string term) {
+bool grepl_fixed(const std::string &pat, const std::string &term) {
   int pat_len = pat.size();
   int term_len = term.size();
   int term_less_pat = term_len - pat_len;
@@ -40,11 +40,10 @@ bool grepl_fixed(std::string pat, std::string term) {
 
 // Given a string (cn_str), look up each provincial string in cn_str (treating 
 // the province strings as substrings).
-std::vector<std::string> substring_lookup_prov(std::string cn_str) {
+std::vector<std::string> substring_lookup_prov(const std::string &cn_str) {
   std::vector<std::string> out;
-  std::string curr_dd;
   for(int i = 0; i < prov_dd_len; i++) {
-    curr_dd = prov_dd_strings[i];
+    const std::string &curr_dd = prov_dd_strings[i];
     if(grepl_fixed(curr_dd, cn_str)) {
       out.push_back(curr_dd);
     }
@@ -56,11 +55,10 @@ std::vector<std::string> substring_lookup_prov(std::string cn_str) {
 
 // Given a string (cn_str), look up each city string in cn_str (treating the 
 // city strings as substrings).
-std::vector<std::string> substring_lookup_city(std::string cn_str) {
+std::vector<std::string> substring_lookup_city(const std::string &cn_str) {
   std::vector<std::string> out;
-  std::string curr_dd;
   for(int i = 0; i < city_dd_len; i++) {
-    curr_dd = city_dd_strings[i];
+    const std::string &curr_dd = city_dd_strings[i];
     if(grepl_fixed(curr_dd, cn_str)) {
       out.push_back(curr_dd);
     }
@@ -72,11 +70,10 @@ std::vector<std::string> substring_lookup_city(std::string cn_str) {
 
 // Given a string (cn_str), look up each county string in cn_str (treating the 
 // county strings as substrings).
-std::vector<std::string> substring_lookup_cnty(std::string cn_str) {
+std::vector<std::string> substring_lookup_cnty(const std::string &cn_str) {
   std::vector<std::string> out;
-  std::string curr_dd;
   for(int i = 0; i < cnty_dd_len; i++) {
-    curr_dd = cnty_dd_strings[i];
+    const std::string &curr_dd = cnty_dd_strings[i];
     if(grepl_fixed(curr_dd, cn_str)) {
       out.push_back(curr_dd);
     }
@@ -88,7 +85,7 @@ std::vector<std::string> substring_lookup_cnty(std::string cn_str) {
 
 // Given a string (cn_str), look up each county_2015 string in cn_str (treating
 // the county_2015 strings as substrings).
-std::vector<std::string> substring_lookup_cnty_2015(std::string cn_str) {
+std::vector<std::string> substring_lookup_cnty_2015(const std::string &cn_str) {
   std::vector<std::string> out;
   std::string curr_dd;
   for(int i = 0; i < cnty_dd_2015_len; i++) {
@@ -105,16 +102,14 @@ std::vector<std::string> substring_lookup_cnty_2015(std::string cn_str) {
 // Given a string (cn_str), look up each city string in cn_str (treating the 
 // city strings as substrings). Also takes an int provincial code as input, 
 // used for validating string matches.
-std::vector<std::string> substring_lookup_city_w_code(std::string cn_str,
-                                                      int parent_code) {
+std::vector<std::string> substring_lookup_city_w_code(const std::string &cn_str,
+                                                      const int &parent_code) {
   std::vector<std::string> out;
   std::string pc_str = std::to_string(parent_code);
-  //int pc_str_len = pc_str.size();
 
-  std::string curr_city_str;
   std::string curr_city_code;
   for(int i = 0; i < city_dd_len; i++) {
-    curr_city_str = city_dd_strings[i];
+    const std::string &curr_city_str = city_dd_strings[i];
     if(grepl_fixed(curr_city_str, cn_str)) {
       curr_city_code = std::to_string(city_dd_codes[i]);
       if(pc_str == curr_city_code.substr(0, 2)) {
@@ -130,16 +125,15 @@ std::vector<std::string> substring_lookup_city_w_code(std::string cn_str,
 // Given a string (cn_str), look up each county string in cn_str (treating the 
 // county strings as substrings). Also takes an int geo code as input (either 
 // provincial code or city code), used for validating string matches.
-std::vector<std::string> substring_lookup_cnty_w_code(std::string cn_str,
-                                                      int parent_code) {
+std::vector<std::string> substring_lookup_cnty_w_code(const std::string &cn_str,
+                                                      const int &parent_code) {
   std::vector<std::string> out;
   std::string pc_str = std::to_string(parent_code);
   int pc_str_len = pc_str.size();
 
-  std::string curr_cnty_str;
   std::string curr_cnty_code;
   for(int i = 0; i < cnty_dd_len; i++) {
-    curr_cnty_str = cnty_dd_strings[i];
+    const std::string &curr_cnty_str = cnty_dd_strings[i];
     if(grepl_fixed(curr_cnty_str, cn_str)) {
       curr_cnty_code = std::to_string(cnty_dd_codes[i]);
       if(pc_str == curr_cnty_code.substr(0, pc_str_len)) {
@@ -153,7 +147,7 @@ std::vector<std::string> substring_lookup_cnty_w_code(std::string cn_str,
 
 
 // Get numeric index of a substring pattern with a string.
-int substring_index(std::string term, std::string pat) {
+int substring_index(const std::string &term, const std::string &pat) {
   int pat_len = pat.size();
   int term_len = term.size();
   int term_less_pat = term_len - pat_len;
@@ -186,7 +180,7 @@ int substring_index(std::string term, std::string pat) {
 // Given a string (term) and a vector of substrings that all appear in term,
 // return the substring that appears "earliest" in term (has the smallest
 // beginning index within term).
-std::string get_earliest_substr(std::string term,
+std::string get_earliest_substr(const std::string &term,
                                 const std::vector<std::string> &substrings) {
   int substrings_len = substrings.size();
   IntegerVector idx(substrings_len);
@@ -200,7 +194,7 @@ std::string get_earliest_substr(std::string term,
 
 
 // Given an int, return a portion of the digits in int (a "substring" of int).
-int substr_int(int x, int start, int out_len) {
+int substr_int(const int &x, const int &start, const int &out_len) {
   std::string x_str = std::to_string(x);
   return(atoi(x_str.substr(start, out_len).c_str()));
 }
@@ -208,7 +202,7 @@ int substr_int(int x, int start, int out_len) {
 
 // Given a list of lists, extract the idx'th element  
 // from each inner list, return as a char vector.
-CharacterVector extract_char_vector(const List &x, int idx) {
+CharacterVector extract_char_vector(const List &x, const int &idx) {
   int x_len = x.size();
   CharacterVector out(x_len);
   
@@ -229,7 +223,7 @@ CharacterVector extract_char_vector(const List &x, int idx) {
 
 // Given a list of lists, extract the idx'th element
 // from each inner list, return as an int vector.
-std::vector<int> extract_int_vector(const List &x, int idx) {
+std::vector<int> extract_int_vector(const List &x, const int &idx) {
   int x_len = x.size();
   std::vector<int> out(x_len);
   
@@ -245,7 +239,7 @@ std::vector<int> extract_int_vector(const List &x, int idx) {
 
 // Convert a provincial string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_prov(std::string cn_loc) {
+int as_geocode_prov(const std::string &cn_loc) {
   int out = 0;
   
   for(int i = 0; i < prov_dd_len; ++i) {
@@ -261,7 +255,7 @@ int as_geocode_prov(std::string cn_loc) {
 
 // Convert a city string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_city(std::string cn_loc) {
+int as_geocode_city(const std::string &cn_loc) {
   int out = 0;
   
   for(int i = 0; i < city_dd_len; ++i) {
@@ -277,7 +271,7 @@ int as_geocode_city(std::string cn_loc) {
 
 // Convert a county string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_cnty(std::string cn_loc) {
+int as_geocode_cnty(const std::string &cn_loc) {
   int out = 0;
   
   for(int i = 0; i < cnty_dd_len; ++i) {
@@ -293,7 +287,7 @@ int as_geocode_cnty(std::string cn_loc) {
 
 // Convert a county_2015 string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_cnty_2015(std::string cn_loc) {
+int as_geocode_cnty_2015(const std::string &cn_loc) {
   int out = 0;
   
   for(int i = 0; i < cnty_dd_2015_len; ++i) {
@@ -309,7 +303,7 @@ int as_geocode_cnty_2015(std::string cn_loc) {
 
 // Convert a provincial geocode from the pkg data dict to its
 // corresponding location string.
-std::string as_geostring_prov(int code) {
+std::string as_geostring_prov(const int &code) {
   std::string out;
   
   for(int i = 0; i < prov_dd_len; ++i) {
@@ -325,7 +319,7 @@ std::string as_geostring_prov(int code) {
 
 // Convert a city geocode from the pkg data dict to its
 // corresponding location string.
-std::string as_geostring_city(int code) {
+std::string as_geostring_city(const int &code) {
   std::string out;
   
   for(int i = 0; i < city_dd_len; ++i) {
