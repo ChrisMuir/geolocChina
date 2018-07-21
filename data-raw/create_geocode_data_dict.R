@@ -4,8 +4,14 @@ library(jsonlite)
 
 # Get all of the most up-to-date China geocode data from GitHub repo:
 # https://github.com/modood/Administrative-divisions-of-China
+# Write to txt files as package data.
 
-geo_data <- list()
+# If extdata directory does not exist, create it.
+pkg_dir <- getwd()
+extdata_dir <- file.path(pkg_dir, "inst", "extdata")
+if (!dir.exists(extdata_dir)) {
+  dir.create(extdata_dir, recursive = TRUE)
+}
 
 # Provincial data
 res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/provinces.json") %>% 
@@ -21,8 +27,14 @@ if (length(idx) == 0) {
 } else {
   res$name[-idx] <- names_edited[-idx]
 }
-geo_data$prov_strings <- res$name
-geo_data$prov_codes <- res$code
+
+file_conn <- file("./inst/extdata/prov_strings.txt")
+writeLines(res$name, file_conn)
+close(file_conn)
+
+file_conn <- file("./inst/extdata/prov_codes.txt")
+writeLines(res$code, file_conn)
+close(file_conn)
 
 # City data
 res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/cities.json") %>% 
@@ -38,8 +50,14 @@ if (length(idx) == 0) {
 } else {
   res$name[-idx] <- names_edited[-idx]
 }
-geo_data$city_strings <- res$name
-geo_data$city_codes <- res$code
+
+file_conn <- file("./inst/extdata/city_strings.txt")
+writeLines(res$name, file_conn)
+close(file_conn)
+
+file_conn <- file("./inst/extdata/city_codes.txt")
+writeLines(res$code, file_conn)
+close(file_conn)
 
 # County data
 res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/areas.json") %>% 
@@ -55,19 +73,11 @@ if (length(idx) == 0) {
 } else {
   res$name[-idx] <- names_edited[-idx]
 }
-geo_data$cnty_strings <- res$name
-geo_data$cnty_codes <- res$code
 
-# If extdata directory does not exist, create it.
-pkg_dir <- getwd()
-extdata_dir <- file.path(pkg_dir, "inst", "extdata")
-if (!dir.exists(extdata_dir)) {
-  dir.create(extdata_dir, recursive = TRUE)
-}
+file_conn <- file("./inst/extdata/cnty_strings.txt")
+writeLines(res$name, file_conn)
+close(file_conn)
 
-# Save data to extdata dir.
-save(
-  geo_data, 
-  file = file.path(extdata_dir, "cn_geocodes.rda"), 
-  compress = "bzip2"
-)
+file_conn <- file("./inst/extdata/cnty_codes.txt")
+writeLines(res$code, file_conn)
+close(file_conn)

@@ -1,13 +1,67 @@
 # Set up package env to house package data used for geolocation.
 cn_env <- new.env()
 
-# Load package data.
-geo_data_file <- system.file("extdata",
-                             "cn_geocodes.rda",
-                             package = "geolocChina")
+# assign paths to all of the package data vectors to the cn_env.
+assign(
+  "prov_str_path", 
+  system.file("extdata",
+              "prov_strings.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
 
-if (file.exists(geo_data_file)) {
-  load(geo_data_file, envir = cn_env)
-} else {
-  stop("package data file 'cn_geocodes.rda' is missing")
-}
+assign(
+  "prov_int_path", 
+  system.file("extdata",
+              "prov_codes.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "city_str_path", 
+  system.file("extdata",
+              "city_strings.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "city_int_path", 
+  system.file("extdata",
+              "city_codes.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "cnty_str_path", 
+  system.file("extdata",
+              "cnty_strings.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "cnty_int_path", 
+  system.file("extdata",
+              "cnty_codes.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "cnty_2015_str_path", 
+  system.file("extdata",
+              "cnty_strings_2015.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
+
+assign(
+  "cnty_2015_int_path", 
+  system.file("extdata",
+              "cnty_codes_2015.txt",
+              package = "geolocChina"), 
+  envir = cn_env
+)
