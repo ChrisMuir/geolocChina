@@ -53,7 +53,7 @@ assign(
 assign(
   "cnty_2015_str_path", 
   system.file("extdata",
-              "cnty_strings_2015.txt",
+              "cnty_2015_strings.txt",
               package = "geolocChina"), 
   envir = cn_env
 )
@@ -61,7 +61,7 @@ assign(
 assign(
   "cnty_2015_int_path", 
   system.file("extdata",
-              "cnty_codes_2015.txt",
+              "cnty_2015_codes.txt",
               package = "geolocChina"), 
   envir = cn_env
 )
