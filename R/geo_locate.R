@@ -27,3 +27,18 @@ geo_locate <- function(cn_strings) {
   stopifnot(is.character(cn_strings))
   cpp_geo_locate(cn_strings)
 }
+
+#' Get geolocChina Package Data
+#' 
+#' Returns the package data used for geolocation as a tidy data frame. This 
+#' package uses Chinese geolocation data from this GitHub repo:
+#' \url{https://github.com/modood/Administrative-divisions-of-China}
+#'
+#' @return data frame
+#' @export
+#'
+#' @examples
+#' pkg_data <- get_package_data()
+get_package_data <- function() {
+  cpp_get_package_data()
+}

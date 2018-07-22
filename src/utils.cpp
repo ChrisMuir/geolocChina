@@ -450,3 +450,55 @@ DataFrame get_na_dataframe(const int &x) {
   
   return(out);
 }
+
+
+// Helper function for appending a string (val) to the end of a vector (region_type) 
+// multiple times (times).
+void rep_push_back(std::vector<std::string> &region_type, 
+                   const std::string &val, 
+                   const int &times) {
+  for(int i = 0; i < times; ++i) {
+    region_type.push_back(val);
+  }
+}
+
+
+// Return a data frame containing all of the package geocode data.
+// [[Rcpp::export]]
+DataFrame cpp_get_package_data() {
+  int out_len = prov_dd_len + city_dd_len + cnty_dd_len + cnty_dd_2015_len;
+  
+  // Create vector containing all package data region names.
+  std::vector<std::string> strings;
+  strings.reserve(out_len);
+  strings.insert(strings.end(), prov_dd_strings.begin(), prov_dd_strings.end());
+  strings.insert(strings.end(), city_dd_strings.begin(), city_dd_strings.end());
+  strings.insert(strings.end(), cnty_dd_strings.begin(), cnty_dd_strings.end());
+  strings.insert(strings.end(), cnty_dd_strings_2015.begin(), cnty_dd_strings_2015.end());
+
+  // Create vector containing all package data geocodes.
+  std::vector<int> codes;
+  codes.reserve(out_len);
+  codes.insert(codes.end(), prov_dd_codes.begin(), prov_dd_codes.end());
+  codes.insert(codes.end(), city_dd_codes.begin(), city_dd_codes.end());
+  codes.insert(codes.end(), cnty_dd_codes.begin(), cnty_dd_codes.end());
+  codes.insert(codes.end(), cnty_dd_codes_2015.begin(), cnty_dd_codes_2015.end());
+
+  // Create vector containing string indicators that correspond to one of the
+  // four region types.
+  std::vector<std::string> region_type;
+  region_type.reserve(out_len);
+  rep_push_back(region_type, "province", prov_dd_len);
+  rep_push_back(region_type, "city", city_dd_len);
+  rep_push_back(region_type, "county", cnty_dd_len);
+  rep_push_back(region_type, "county_2015", cnty_dd_2015_len);
+
+  DataFrame out = DataFrame::create(
+    Named("region") = strings,
+    Named("geocode") = codes,
+    Named("region_type") = region_type,
+    Named("stringsAsFactors") = false
+  );
+  
+  return(out);
+}

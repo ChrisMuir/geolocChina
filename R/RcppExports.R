@@ -5,3 +5,7 @@ cpp_geo_locate <- function(cn_strings) {
     .Call(`_geolocChina_cpp_geo_locate`, cn_strings)
 }
 
+cpp_get_package_data <- function() {
+    .Call(`_geolocChina_cpp_get_package_data`)
+}
+
