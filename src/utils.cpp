@@ -11,9 +11,14 @@ using namespace Rcpp;
 void get_locations(const std::string &cn_str, 
                    std::unordered_map<std::string, int> &substr_map, 
                    std::string &matches, 
-                   List &out) {
+                   CharacterVector &prov_str_out, 
+                   CharacterVector &city_str_out, 
+                   CharacterVector &cnty_str_out, 
+                   IntegerVector &prov_int_out, 
+                   IntegerVector &city_int_out, 
+                   IntegerVector &cnty_int_out, 
+                   const int &index) {
   
-  out = clone(na_list);
   int cn_str_len = cn_str.size();
   
   // Get all possible substrings of cn_str that could possibly have a match 
@@ -30,9 +35,9 @@ void get_locations(const std::string &cn_str,
   substring_lookup_prov(matches, substr_map, cn_str_len, map_end, map_iter, 
                         set_iter);
   if(matches.size() > 0) {
-    out[0] = matches;
+    prov_str_out[index] = String(matches, CE_UTF8);
     curr_prov_code = as_geocode_prov(matches);
-    out[3] = curr_prov_code;
+    prov_int_out[index] = curr_prov_code;
   }
   
   // Look for a City match.
@@ -46,9 +51,9 @@ void get_locations(const std::string &cn_str,
   
   int curr_city_code = NA_INTEGER;
   if(matches.size() > 0) {
-    out[1] = matches;
+    city_str_out[index] = String(matches, CE_UTF8);
     curr_city_code = as_geocode_city(matches);
-    out[4] = curr_city_code;
+    city_int_out[index] = curr_city_code;
   }
   
   // Look for County match.
@@ -65,9 +70,9 @@ void get_locations(const std::string &cn_str,
   
   int curr_cnty_code = NA_INTEGER;
   if(matches.size() > 0) {
-    out[2] = matches;
+    cnty_str_out[index] = String(matches, CE_UTF8);
     curr_cnty_code = as_geocode_cnty(matches);
-    out[5] = curr_cnty_code;
+    cnty_int_out[index] = curr_cnty_code;
   }
   
   //// Try to fill in any missing codes.
@@ -86,8 +91,8 @@ void get_locations(const std::string &cn_str,
       // associated city string as outputs.
       if(city_code_set.find(curr_city_code) != city_code_set.end()) {
         std::string city = as_geostring_city(curr_city_code);
-        out[1] = city;
-        out[4] = curr_city_code;
+        city_str_out[index] = city;
+        city_int_out[index] = curr_city_code;
       }
     }
   }
@@ -100,9 +105,9 @@ void get_locations(const std::string &cn_str,
     // If curr_city_code appears in the city_code_set, use it and its 
     // associated city string as outputs.
     if(city_code_set.find(curr_city_code) != city_code_set.end()) {
-      out[4] = curr_city_code;
+      city_int_out[index] = curr_city_code;
       std::string city = as_geostring_city(curr_city_code);
-      out[1] = city;
+      city_str_out[index] = city;
     }
   }
   
@@ -110,11 +115,11 @@ void get_locations(const std::string &cn_str,
   // two digits from the City code.
   if(curr_city_code != NA_INTEGER && curr_prov_code == NA_INTEGER) {
     curr_prov_code = substr_int(curr_city_code, 0, 2);
-    out[3] = curr_prov_code;
+    prov_int_out[index] = curr_prov_code;
     std::string prov = as_geostring_prov(curr_prov_code);
-    out[0] = prov;
+    prov_str_out[index] = prov;
   }
-
+  
 }
 
 
@@ -358,43 +363,6 @@ void substring_lookup_cnty_w_code(const int &parent_code,
 int substr_int(const int &x, const int &start, const int &out_len) {
   std::string x_str = std::to_string(x);
   return(atoi(x_str.substr(start, out_len).c_str()));
-}
-
-
-// Given a list of lists, extract the idx'th element  
-// from each inner list, return as a char vector.
-CharacterVector extract_char_vector(const List &x, const int &idx) {
-  int x_len = x.size();
-  CharacterVector out(x_len);
-  
-  List curr_x;
-  for(int i = 0; i < x_len; ++i) {
-    curr_x = x[i];
-    std::string curr_out = curr_x[idx];
-    if(curr_out != "NA") {
-      out[i] = String(curr_out, CE_UTF8);
-    } else {
-      out[i] = NA_STRING;
-    }
-  }
-  
-  return(out);
-}
-
-
-// Given a list of lists, extract the idx'th element
-// from each inner list, return as an int vector.
-IntegerVector extract_int_vector(const List &x, const int &idx) {
-  int x_len = x.size();
-  IntegerVector out(x_len);
-  
-  List curr_x;
-  for(int i = 0; i < x_len; ++i) {
-    curr_x = x[i];
-    out[i] = curr_x[idx];
-  }
-  
-  return(out);
 }
 
 

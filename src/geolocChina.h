@@ -11,7 +11,13 @@ using namespace Rcpp;
 void get_locations(const std::string &cn_str, 
                    std::unordered_map<std::string, int> &substr_map, 
                    std::string &matches, 
-                   List &out);
+                   CharacterVector &prov_str_out, 
+                   CharacterVector &city_str_out, 
+                   CharacterVector &cnty_str_out, 
+                   IntegerVector &prov_int_out, 
+                   IntegerVector &city_int_out, 
+                   IntegerVector &cnty_int_out, 
+                   const int &index);
 
 void substring_lookup_prov(std::string &matches, 
                            std::unordered_map<std::string, int> &substr_map, 
@@ -69,10 +75,6 @@ std::string as_geostring_prov(const int &code);
 std::string as_geostring_city(const int &code);
 
 DataFrame get_na_dataframe(const int &x);
-
-CharacterVector extract_char_vector(const List &x, const int &idx);
-
-IntegerVector extract_int_vector(const List &x, const int &idx);
 
 
 #endif // GEOLOCCHINA_H

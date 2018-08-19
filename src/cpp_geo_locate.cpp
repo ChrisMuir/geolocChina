@@ -12,8 +12,6 @@ using namespace Rcpp;
 DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
   int cn_strings_len = cn_strings.size();
-  std::unordered_map<std::string, int> substr_map;
-  std::string matches;
   
   // If input cn_strings is all NA values, then return a data frame full of NA
   // values.
@@ -21,28 +19,35 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
     return(get_na_dataframe(cn_strings_len));
   }
   
-  List res(cn_strings_len);
-  List out;
+  std::unordered_map<std::string, int> substr_map;
+  std::string matches;
+  
+  CharacterVector prov_str_out = CharacterVector(cn_strings_len, NA_STRING);
+  CharacterVector city_str_out = CharacterVector(cn_strings_len, NA_STRING);
+  CharacterVector cnty_str_out = CharacterVector(cn_strings_len, NA_STRING);
+  IntegerVector prov_int_out = IntegerVector(cn_strings_len, NA_INTEGER);
+  IntegerVector city_int_out = IntegerVector(cn_strings_len, NA_INTEGER);
+  IntegerVector cnty_int_out = IntegerVector(cn_strings_len, NA_INTEGER);
   
   // Loop over cn_strings, get geolocations and geocodes for each string.
   for(int i = 0; i < cn_strings_len; ++i) {
-    if(CharacterVector::is_na(cn_strings[i])) {
-      res[i] = na_list;
-    } else {
+    if(!CharacterVector::is_na(cn_strings[i])) {
       const std::string &curr_cn_str = as<std::string>(cn_strings[i]);
-      get_locations(curr_cn_str, substr_map, matches, out);
-      res[i] = out;
+      get_locations(curr_cn_str, substr_map, matches, 
+                    prov_str_out, city_str_out, cnty_str_out, 
+                    prov_int_out, city_int_out, cnty_int_out, 
+                    i);
     }
   }
   
   DataFrame out_df = DataFrame::create(
     Named("location") = cn_strings,
-    Named("province") = extract_char_vector(res, 0),
-    Named("city") = extract_char_vector(res, 1),
-    Named("county") = extract_char_vector(res, 2),
-    Named("province_code") = extract_int_vector(res, 3),
-    Named("city_code") = extract_int_vector(res, 4),
-    Named("county_code") = extract_int_vector(res, 5), 
+    Named("province") = prov_str_out,
+    Named("city") = city_str_out,
+    Named("county") = cnty_str_out,
+    Named("province_code") = prov_int_out,
+    Named("city_code") = city_int_out,
+    Named("county_code") = cnty_int_out, 
     Named("stringsAsFactors") = false
   );
   
