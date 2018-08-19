@@ -8,27 +8,38 @@ using namespace Rcpp;
 #define GEOLOCCHINA_H
 
 // utils.cpp
-List get_locations(const std::string &cn_str);
-  
+List get_locations(const std::string &cn_str, 
+                   std::unordered_set<std::string> &substr_set, 
+                   std::vector<std::string> &matches);
+
 void substring_lookup_prov(const std::string &cn_str, 
-                           std::vector<std::string> &matches);
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set);
 
 void substring_lookup_city(const std::string &cn_str, 
-                           std::vector<std::string> &matches);
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set);
 
 void substring_lookup_cnty(const std::string &cn_str, 
-                           std::vector<std::string> &matches);
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set);
 
 void substring_lookup_cnty_2015(const std::string &cn_str, 
-                                std::vector<std::string> &matches);
+                                std::vector<std::string> &matches, 
+                                std::unordered_set<std::string> &substr_set);
 
-void substring_lookup_city_w_code(const std::string &cn_str,
+void substring_lookup_city_w_code(const std::string &cn_str, 
                                   const int &parent_code, 
-                                  std::vector<std::string> &matches);
+                                  std::vector<std::string> &matches, 
+                                  std::unordered_set<std::string> &substr_set);
 
-void substring_lookup_cnty_w_code(const std::string &cn_str,
+void substring_lookup_cnty_w_code(const std::string &cn_str, 
                                   const int &parent_code, 
-                                  std::vector<std::string> &matches);
+                                  std::vector<std::string> &matches, 
+                                  std::unordered_set<std::string> &substr_set);
+
+void get_all_substr(const std::string &input, 
+                    std::unordered_set<std::string> &substr_set);
 
 std::string get_earliest_substr(const std::string &term,
                                 const std::vector<std::string> &substrings);
@@ -52,5 +63,6 @@ DataFrame get_na_dataframe(const int &x);
 CharacterVector extract_char_vector(const List &x, const int &idx);
 
 IntegerVector extract_int_vector(const List &x, const int &idx);
+
 
 #endif // GEOLOCCHINA_H

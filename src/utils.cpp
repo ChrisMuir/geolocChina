@@ -8,14 +8,19 @@ using namespace Rcpp;
 // Given an input Chinese location/address string, determine the Province,
 // City, and County of the input string (and the assoicated geocodes for all
 // three), return the six values as a named list.
-List get_locations(const std::string &cn_str) {
+List get_locations(const std::string &cn_str, 
+                   std::unordered_set<std::string> &substr_set, 
+                   std::vector<std::string> &matches) {
   
   List out = clone(na_list);
-  std::vector<std::string> matches;
+
+  // Get all possible substrings of cn_str that could possibly have a match 
+  // in the package data strings (just based on char length).
+  get_all_substr(cn_str, substr_set);
   
   // Look for a Province match.
   int curr_prov_code = NA_INTEGER;
-  substring_lookup_prov(cn_str, matches);
+  substring_lookup_prov(cn_str, matches, substr_set);
   if(matches.size() > 0) {
     std::string prov = get_earliest_substr(cn_str, matches);
     out[0] = prov;
@@ -25,9 +30,9 @@ List get_locations(const std::string &cn_str) {
   
   // Look for a City match.
   if(curr_prov_code == NA_INTEGER) {
-    substring_lookup_city(cn_str, matches);
+    substring_lookup_city(cn_str, matches, substr_set);
   } else {
-    substring_lookup_city_w_code(cn_str, curr_prov_code, matches);
+    substring_lookup_city_w_code(cn_str, curr_prov_code, matches, substr_set);
   }
   
   int curr_city_code = NA_INTEGER;
@@ -40,15 +45,15 @@ List get_locations(const std::string &cn_str) {
   
   // Look for County match.
   if(curr_prov_code == NA_INTEGER and curr_city_code == NA_INTEGER) {
-    substring_lookup_cnty(cn_str, matches);
+    substring_lookup_cnty(cn_str, matches, substr_set);
   } else if(curr_city_code == NA_INTEGER) {
-    substring_lookup_cnty_w_code(cn_str, curr_prov_code, matches);
+    substring_lookup_cnty_w_code(cn_str, curr_prov_code, matches, substr_set);
   } else {
-    substring_lookup_cnty_w_code(cn_str, curr_city_code, matches);
+    substring_lookup_cnty_w_code(cn_str, curr_city_code, matches, substr_set);
   }
   
   int curr_cnty_code = NA_INTEGER;
-  if (matches.size() > 0) {
+  if(matches.size() > 0) {
     std::string county = get_earliest_substr(cn_str, matches);
     out[2] = county;
     curr_cnty_code = as_geocode_cnty(county);
@@ -60,7 +65,7 @@ List get_locations(const std::string &cn_str) {
   // If City is NA and County is NA, try to fill in the City code/string from
   // the county_2015 vectors.
   if(curr_cnty_code == NA_INTEGER and curr_city_code == NA_INTEGER) {
-    substring_lookup_cnty_2015(cn_str, matches);
+    substring_lookup_cnty_2015(cn_str, matches, substr_set);
     
     if(matches.size() > 0) {
       std::string county = get_earliest_substr(cn_str, matches);
@@ -79,7 +84,7 @@ List get_locations(const std::string &cn_str) {
   
   // If City is NA and County is not NA, fill in City with the first four
   // digits from the County code.
-  if (curr_cnty_code != NA_INTEGER and curr_city_code == NA_INTEGER) {
+  if(curr_cnty_code != NA_INTEGER and curr_city_code == NA_INTEGER) {
     curr_city_code = substr_int(curr_cnty_code, 0, 4);
     
     // If curr_city_code appears in the city_code_set, use it and its 
@@ -93,7 +98,7 @@ List get_locations(const std::string &cn_str) {
   
   // If Province is NA and City is not NA, fill in Province with the first
   // two digits from the City code.
-  if (curr_city_code != NA_INTEGER and curr_prov_code == NA_INTEGER) {
+  if(curr_city_code != NA_INTEGER and curr_prov_code == NA_INTEGER) {
     curr_prov_code = substr_int(curr_city_code, 0, 2);
     out[3] = curr_prov_code;
     std::string prov = as_geostring_prov(curr_prov_code);
@@ -104,51 +109,59 @@ List get_locations(const std::string &cn_str) {
 }
 
 
-// cpp version of base::grepl(pattern, string, fixed = TRUE)
-bool grepl_fixed(const std::string &pat, const std::string &term) {
-  int pat_len = pat.size();
-  int term_len = term.size();
-  int term_less_pat = term_len - pat_len;
+// Get all possible substrings of cn_str that could possibly have a match 
+// in the package data strings (just based on char length).
+void get_all_substr(const std::string &input, 
+                    std::unordered_set<std::string> &substr_set) {
+  int input_len = input.size();
+  substr_set.clear();
+  std::string curr_token;
   
-  if(term_less_pat < 0) {
-    return FALSE;
-  }
+  // Reserve output size of the substr_set (this is based on the largest
+  // possible collection of substrings...char len 2 thru char len 12, with 
+  // each substring potentially being made up of 3 bytes per char).
+  substr_set.reserve(462);
   
-  if(term_less_pat == 0) {
-    return pat == term;
-  }
-  
-  // Look for pat in substrings of term.
-  bool match;
-  char pat_0 = pat[0];
-  for(int i = 0; i < term_less_pat + 1; ++i) {
-    if(pat_0 == term[i]) {
-      match = TRUE;
-      for(int n = 1; n < pat_len; ++n) {
-        if(pat[n] != term[i+n]) {
-          match = FALSE;
-          break;
-        }
-      }
-      if(match) {
-        return TRUE;
-      }
+  std::vector<int>::iterator iter;
+  std::vector<int>::iterator loop_end = pkg_data_str_lens.end();
+  for(iter = pkg_data_str_lens.begin(); iter != loop_end; ++iter) {
+    int curr_token_len = *iter;
+    if(curr_token_len > input_len) {
+      break;
+    }
+    int input_iter_len = (input_len - curr_token_len) + 1;
+    for(int j = 0; j < input_iter_len; ++j) {
+      curr_token = input.substr(j, curr_token_len);
+      substr_set.insert(curr_token);
     }
   }
-  return FALSE;
 }
 
 
 // Given a string (cn_str), look up each provincial string in cn_str (treating 
 // the province strings as substrings). Return all of the matches.
 void substring_lookup_prov(const std::string &cn_str, 
-                           std::vector<std::string> &matches) {
-  matches.clear();
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set) {
   
-  for(int i = 0; i < prov_dd_len; i++) {
-    const std::string &curr_dd = prov_dd_strings[i];
-    if(grepl_fixed(curr_dd, cn_str)) {
-      matches.push_back(curr_dd);
+  matches.clear();
+  std::unordered_set<std::string>::iterator iter;
+  
+  if(prov_set.size() > substr_set.size()) {
+    std::unordered_set<std::string>::iterator ending = substr_set.end();
+    std::unordered_set<std::string>::iterator prov_end = prov_set.end();
+    for(iter = substr_set.begin(); iter != ending; ++iter) {
+      if(prov_set.find(*iter) != prov_end) {
+        matches.push_back(*iter);
+      }
+    }
+  } else {
+    std::unordered_set<std::string>::iterator ending = prov_set.end();
+    std::unordered_set<std::string>::iterator substr_end = substr_set.end();
+    for(iter = prov_set.begin(); iter != ending; ++iter) {
+      if(substr_set.find(*iter) != substr_end) {
+        matches.push_back(*iter);
+      }
     }
   }
 }
@@ -157,13 +170,26 @@ void substring_lookup_prov(const std::string &cn_str,
 // Given a string (cn_str), look up each city string in cn_str (treating the 
 // city strings as substrings). Return all of the matches.
 void substring_lookup_city(const std::string &cn_str, 
-                           std::vector<std::string> &matches) {
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set) {
   matches.clear();
+  std::unordered_set<std::string>::iterator iter;
   
-  for(int i = 0; i < city_dd_len; i++) {
-    const std::string &curr_dd = city_dd_strings[i];
-    if(grepl_fixed(curr_dd, cn_str)) {
-      matches.push_back(curr_dd);
+  if(city_set.size() > substr_set.size()) {
+    std::unordered_set<std::string>::iterator ending = substr_set.end();
+    std::unordered_set<std::string>::iterator city_end = city_set.end();
+    for(iter = substr_set.begin(); iter != ending; ++iter) {
+      if(city_set.find(*iter) != city_end) {
+        matches.push_back(*iter);
+      }
+    }
+  } else {
+    std::unordered_set<std::string>::iterator ending = city_set.end();
+    std::unordered_set<std::string>::iterator substr_end = substr_set.end();
+    for(iter = city_set.begin(); iter != ending; ++iter) {
+      if(substr_set.find(*iter) != substr_end) {
+        matches.push_back(*iter);
+      }
     }
   }
 }
@@ -172,13 +198,26 @@ void substring_lookup_city(const std::string &cn_str,
 // Given a string (cn_str), look up each county string in cn_str (treating the 
 // county strings as substrings). Return all of the matches.
 void substring_lookup_cnty(const std::string &cn_str, 
-                           std::vector<std::string> &matches) {
+                           std::vector<std::string> &matches, 
+                           std::unordered_set<std::string> &substr_set) {
   matches.clear();
+  std::unordered_set<std::string>::iterator iter;
   
-  for(int i = 0; i < cnty_dd_len; i++) {
-    const std::string &curr_dd = cnty_dd_strings[i];
-    if(grepl_fixed(curr_dd, cn_str)) {
-      matches.push_back(curr_dd);
+  if(cnty_set.size() > substr_set.size()) {
+    std::unordered_set<std::string>::iterator ending = substr_set.end();
+    std::unordered_set<std::string>::iterator cnty_end = cnty_set.end();
+    for(iter = substr_set.begin(); iter != ending; ++iter) {
+      if(cnty_set.find(*iter) != cnty_end) {
+        matches.push_back(*iter);
+      }
+    }
+  } else {
+    std::unordered_set<std::string>::iterator ending = cnty_set.end();
+    std::unordered_set<std::string>::iterator substr_end = substr_set.end();
+    for(iter = cnty_set.begin(); iter != ending; ++iter) {
+      if(substr_set.find(*iter) != substr_end) {
+        matches.push_back(*iter);
+      }
     }
   }
 }
@@ -187,13 +226,26 @@ void substring_lookup_cnty(const std::string &cn_str,
 // Given a string (cn_str), look up each county_2015 string in cn_str (treating
 // the county_2015 strings as substrings). Return all of the matches.
 void substring_lookup_cnty_2015(const std::string &cn_str, 
-                                std::vector<std::string> &matches) {
+                                std::vector<std::string> &matches, 
+                                std::unordered_set<std::string> &substr_set) {
   matches.clear();
+  std::unordered_set<std::string>::iterator iter;
   
-  for(int i = 0; i < cnty_dd_2015_len; i++) {
-    const std::string &curr_dd = cnty_dd_strings_2015[i];
-    if(grepl_fixed(curr_dd, cn_str)) {
-      matches.push_back(curr_dd);
+  if(cnty_2015_set.size() > substr_set.size()) {
+    std::unordered_set<std::string>::iterator ending = substr_set.end();
+    std::unordered_set<std::string>::iterator cnty_2015_end = cnty_2015_set.end();
+    for(iter = substr_set.begin(); iter != ending; ++iter) {
+      if(cnty_2015_set.find(*iter) != cnty_2015_end) {
+        matches.push_back(*iter);
+      }
+    }
+  } else {
+    std::unordered_set<std::string>::iterator ending = cnty_2015_set.end();
+    std::unordered_set<std::string>::iterator substr_end = substr_set.end();
+    for(iter = cnty_2015_set.begin(); iter != ending; ++iter) {
+      if(substr_set.find(*iter) != substr_end) {
+        matches.push_back(*iter);
+      }
     }
   }
 }
@@ -204,17 +256,27 @@ void substring_lookup_cnty_2015(const std::string &cn_str,
 // used for validating string matches. Return all of the matches.
 void substring_lookup_city_w_code(const std::string &cn_str,
                                   const int &parent_code, 
-                                  std::vector<std::string> &matches) {
-  matches.clear();
-  std::string pc_str = std::to_string(parent_code);
+                                  std::vector<std::string> &matches, 
+                                  std::unordered_set<std::string> &substr_set) {
   
-  std::string curr_city_code;
-  for(int i = 0; i < city_dd_len; i++) {
-    const std::string &curr_city_str = city_dd_strings[i];
-    if(grepl_fixed(curr_city_str, cn_str)) {
-      curr_city_code = std::to_string(city_dd_codes[i]);
-      if(pc_str == curr_city_code.substr(0, 2)) {
-        matches.push_back(curr_city_str);
+  substring_lookup_city(cn_str, matches, substr_set);
+  
+  if(matches.size() > 0) {
+    std::string pc_str = std::to_string(parent_code);
+    std::string curr_city_code;
+    
+    std::unordered_set<std::string> match_set(matches.begin(), matches.end());
+    std::unordered_set<std::string>::iterator match_set_end = match_set.end();
+    
+    std::vector<std::string> temp_matches = matches;
+    matches.clear();
+    
+    for(int i = 0; i < city_dd_len; ++i) {
+      if(match_set.find(city_dd_strings[i]) != match_set_end) {
+        curr_city_code = std::to_string(city_dd_codes[i]);
+        if(pc_str == curr_city_code.substr(0, 2)) {
+          matches.push_back(city_dd_strings[i]);
+        }
       }
     }
   }
@@ -225,20 +287,22 @@ void substring_lookup_city_w_code(const std::string &cn_str,
 // county strings as substrings). Also takes an int geo code as input (either 
 // provincial code or city code), used for validating string matches. Return 
 // all of the matches.
-void substring_lookup_cnty_w_code(const std::string &cn_str,
+void substring_lookup_cnty_w_code(const std::string &cn_str, 
                                   const int &parent_code, 
-                                  std::vector<std::string> &matches) {
+                                  std::vector<std::string> &matches, 
+                                  std::unordered_set<std::string> &substr_set) {
+  
   matches.clear();
   std::string pc_str = std::to_string(parent_code);
   int pc_str_len = pc_str.size();
+  std::unordered_set<std::string>::iterator set_end = substr_set.end();
   
   std::string curr_cnty_code;
   for(int i = 0; i < cnty_dd_len; i++) {
-    const std::string &curr_cnty_str = cnty_dd_strings[i];
-    if(grepl_fixed(curr_cnty_str, cn_str)) {
+    if(substr_set.find(cnty_dd_strings[i]) != set_end) {
       curr_cnty_code = std::to_string(cnty_dd_codes[i]);
       if(pc_str == curr_cnty_code.substr(0, pc_str_len)) {
-        matches.push_back(curr_cnty_str);
+        matches.push_back(cnty_dd_strings[i]);
       }
     }
   }

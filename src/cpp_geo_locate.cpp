@@ -12,6 +12,8 @@ using namespace Rcpp;
 DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
   int cn_strings_len = cn_strings.size();
+  std::unordered_set<std::string> substr_set;
+  std::vector<std::string> matches;
   
   // If input cn_strings is all NA values, then return a data frame full of NA
   // values.
@@ -28,7 +30,7 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
       res[i] = na_list;
     } else {
       const std::string &curr_cn_str = as<std::string>(cn_strings[i]);
-      geo_locs = get_locations(curr_cn_str);
+      geo_locs = get_locations(curr_cn_str, substr_set, matches);
       res[i] = geo_locs;
     }
   }

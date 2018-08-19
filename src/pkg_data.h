@@ -97,15 +97,53 @@ const std::vector<int> cnty_dd_codes_2015 = read_file_int(
   String(cn_env.get("cnty_2015_int_path"))
 );
 
+
 // Record lengths of some of the pkg data vectors.
 const int &prov_dd_len = prov_dd_strings.size();
 const int &city_dd_len = city_dd_strings.size();
 const int &cnty_dd_len = cnty_dd_strings.size();
 const int &cnty_dd_2015_len = cnty_dd_strings_2015.size();
 
+
 // Create set of city codes, to use as a reference when attempting to assign 
 // a city code from a matched county code.
 const std::unordered_set<int> city_code_set(city_dd_codes.begin(), 
                                             city_dd_codes.end());
+
+
+// Create unordered_sets of the four pkg data string vectors.
+std::unordered_set<std::string> prov_set(prov_dd_strings.begin(), prov_dd_strings.end());
+std::unordered_set<std::string> city_set(city_dd_strings.begin(), city_dd_strings.end());
+std::unordered_set<std::string> cnty_set(cnty_dd_strings.begin(), cnty_dd_strings.end());
+std::unordered_set<std::string> cnty_2015_set(cnty_dd_strings_2015.begin(), cnty_dd_strings_2015.end());
+
+
+// Get all unique char lens of each package data string.
+static std::vector<int> get_pkg_data_str_lens() {
+  std::unordered_set<int> all_lens;
+  
+  for(int i = 0; i < prov_dd_len; ++i) {
+    all_lens.insert(prov_dd_strings[i].size());
+  }
+  
+  for(int i = 0; i < city_dd_len; ++i) {
+    all_lens.insert(city_dd_strings[i].size());
+  }
+  
+  for(int i = 0; i < cnty_dd_len; ++i) {
+    all_lens.insert(cnty_dd_strings[i].size());
+  }
+  
+  for(int i = 0; i < cnty_dd_2015_len; ++i) {
+    all_lens.insert(cnty_dd_strings_2015[i].size());
+  }
+  
+  std::vector<int> out(all_lens.begin(), all_lens.end());
+  std::sort(out.begin(), out.end());
+  return out;
+}
+
+std::vector<int> pkg_data_str_lens = get_pkg_data_str_lens();
+
 
 #endif // PKG_DATA_H
