@@ -121,35 +121,6 @@ void get_locations(const std::string &cn_str,
 // Get all possible substrings of cn_str that could possibly have a match 
 // in the package data strings (just based on char length).
 void get_all_substr(const std::string &input, 
-                    std::unordered_set<std::string> &substr_set) {
-  int input_len = input.size();
-  substr_set.clear();
-  std::string curr_token;
-  
-  // Reserve output size of the substr_set (this is based on the largest
-  // possible collection of substrings...char len 2 thru char len 12, with 
-  // each substring potentially being made up of 3 bytes per char).
-  substr_set.reserve(462);
-  
-  std::vector<int>::iterator iter;
-  std::vector<int>::iterator loop_end = pkg_data_str_lens.end();
-  for(iter = pkg_data_str_lens.begin(); iter != loop_end; ++iter) {
-    int curr_token_len = *iter;
-    if(curr_token_len > input_len) {
-      break;
-    }
-    int input_iter_len = (input_len - curr_token_len) + 1;
-    for(int j = 0; j < input_iter_len; ++j) {
-      curr_token = input.substr(j, curr_token_len);
-      substr_set.insert(curr_token);
-    }
-  }
-}
-
-
-// Get all possible substrings of cn_str that could possibly have a match 
-// in the package data strings (just based on char length).
-void get_all_substr(const std::string &input, 
                    std::unordered_map<std::string, int> &substr_map) {
   int input_len = input.size();
   substr_map.clear();
