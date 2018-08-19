@@ -12,8 +12,8 @@ using namespace Rcpp;
 DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
   int cn_strings_len = cn_strings.size();
-  std::unordered_set<std::string> substr_set;
-  std::vector<std::string> matches;
+  std::unordered_map<std::string, int> substr_map;
+  std::string matches;
   
   // If input cn_strings is all NA values, then return a data frame full of NA
   // values.
@@ -22,7 +22,7 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   }
   
   List res(cn_strings_len);
-  List geo_locs;
+  List out;
   
   // Loop over cn_strings, get geolocations and geocodes for each string.
   for(int i = 0; i < cn_strings_len; ++i) {
@@ -30,12 +30,12 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
       res[i] = na_list;
     } else {
       const std::string &curr_cn_str = as<std::string>(cn_strings[i]);
-      geo_locs = get_locations(curr_cn_str, substr_set, matches);
-      res[i] = geo_locs;
+      get_locations(curr_cn_str, substr_map, matches, out);
+      res[i] = out;
     }
   }
   
-  DataFrame out = DataFrame::create(
+  DataFrame out_df = DataFrame::create(
     Named("location") = cn_strings,
     Named("province") = extract_char_vector(res, 0),
     Named("city") = extract_char_vector(res, 1),
@@ -46,5 +46,5 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
     Named("stringsAsFactors") = false
   );
   
-  return(out);
+  return(out_df);
 }
