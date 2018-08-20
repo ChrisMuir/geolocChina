@@ -62,11 +62,11 @@ void get_all_substr(const std::string &input,
 
 int substr_int(const int &x, const int &start, const int &out_len);
 
-int as_geocode_prov(const std::string &cn_loc);
+void as_geocode_prov(const std::string &cn_loc, int &curr_prov_code);
 
-int as_geocode_city(const std::string &cn_loc);
+void as_geocode_city(const std::string &cn_loc, int &curr_city_code);
 
-int as_geocode_cnty(const std::string &cn_loc);
+void as_geocode_cnty(const std::string &cn_loc, int &curr_cnty_code);
 
 int as_geocode_cnty_2015(const std::string &cn_loc);
 

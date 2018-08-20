@@ -36,7 +36,7 @@ void get_locations(const std::string &cn_str,
                         set_iter);
   if(matches.size() > 0) {
     prov_str_out[index] = String(matches, CE_UTF8);
-    curr_prov_code = as_geocode_prov(matches);
+    as_geocode_prov(matches, curr_prov_code);
     prov_int_out[index] = curr_prov_code;
   }
   
@@ -52,7 +52,7 @@ void get_locations(const std::string &cn_str,
   int curr_city_code = NA_INTEGER;
   if(matches.size() > 0) {
     city_str_out[index] = String(matches, CE_UTF8);
-    curr_city_code = as_geocode_city(matches);
+    as_geocode_city(matches, curr_city_code);
     city_int_out[index] = curr_city_code;
   }
   
@@ -71,7 +71,7 @@ void get_locations(const std::string &cn_str,
   int curr_cnty_code = NA_INTEGER;
   if(matches.size() > 0) {
     cnty_str_out[index] = String(matches, CE_UTF8);
-    curr_cnty_code = as_geocode_cnty(matches);
+    as_geocode_cnty(matches, curr_cnty_code);
     cnty_int_out[index] = curr_cnty_code;
   }
   
@@ -89,7 +89,7 @@ void get_locations(const std::string &cn_str,
       
       // If curr_city_code appears in the city_code_set, use it and its 
       // associated city string as outputs.
-      if(city_code_set.find(curr_city_code) != city_code_set.end()) {
+      if(city_code_set.count(curr_city_code) > 0) {
         std::string city = as_geostring_city(curr_city_code);
         city_str_out[index] = city;
         city_int_out[index] = curr_city_code;
@@ -104,7 +104,7 @@ void get_locations(const std::string &cn_str,
     
     // If curr_city_code appears in the city_code_set, use it and its 
     // associated city string as outputs.
-    if(city_code_set.find(curr_city_code) != city_code_set.end()) {
+    if(city_code_set.count(curr_city_code) > 0) {
       city_int_out[index] = curr_city_code;
       std::string city = as_geostring_city(curr_city_code);
       city_str_out[index] = city;
@@ -368,49 +368,37 @@ int substr_int(const int &x, const int &start, const int &out_len) {
 
 // Convert a provincial string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_prov(const std::string &cn_loc) {
-  int out = 0;
-  
+void as_geocode_prov(const std::string &cn_loc, int &curr_prov_code) {
   for(int i = 0; i < prov_dd_len; ++i) {
     if(prov_dd_strings[i] == cn_loc) {
-      out = prov_dd_codes[i];
+      curr_prov_code = prov_dd_codes[i];
       break;
     }
   }
-  
-  return(out);
 }
 
 
 // Convert a city string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_city(const std::string &cn_loc) {
-  int out = 0;
-  
+void as_geocode_city(const std::string &cn_loc, int &curr_city_code) {
   for(int i = 0; i < city_dd_len; ++i) {
     if(city_dd_strings[i] == cn_loc) {
-      out = city_dd_codes[i];
+      curr_city_code = city_dd_codes[i];
       break;
     }
   }
-  
-  return(out);
 }
 
 
 // Convert a county string from the pkg data dict to its
 // corresponding geocode.
-int as_geocode_cnty(const std::string &cn_loc) {
-  int out = 0;
-  
+void as_geocode_cnty(const std::string &cn_loc, int &curr_cnty_code) {
   for(int i = 0; i < cnty_dd_len; ++i) {
     if(cnty_dd_strings[i] == cn_loc) {
-      out = cnty_dd_codes[i];
+      curr_cnty_code = cnty_dd_codes[i];
       break;
     }
   }
-  
-  return(out);
 }
 
 
