@@ -37,9 +37,4 @@ namespace supp_pkg_data {
 }
 
 
-namespace rcpp_na_list {
-  extern List na_list;
-}
-
-
 #endif // GLOBAL_DATA_H

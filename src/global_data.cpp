@@ -180,13 +180,3 @@ namespace supp_pkg_data {
   // Create seven container objects.
   iter_pkg_data containers = get_supp_pkg_containers();
 }
-
-
-// Namespace to house na_list object.
-namespace rcpp_na_list {
-  // Define object "na_list". This is a list of NA values that corresponds to 
-  // the schema of the output data frame (province, city, county, province_code,
-  // city_code, county_code).
-  List na_list = List::create(NA_STRING, NA_STRING, NA_STRING, 
-                              NA_INTEGER, NA_INTEGER, NA_INTEGER);
-}
