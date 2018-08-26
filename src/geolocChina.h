@@ -76,5 +76,9 @@ std::string as_geostring_city(const int &code);
 
 DataFrame get_na_dataframe(const int &x);
 
+void rep_push_back(std::vector<std::string> &input_vector, 
+                   const std::string &val, 
+                   const int &times);
+
 
 #endif // GEOLOCCHINA_H

@@ -1,13 +1,11 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 #include "geolocChina.h"
-#include "na_list.h"
 
 
 // Exported function. Takes as input a char vector of Chinese strings, sends 
-// each one through get_locations() in a loop (along with the geolocChina 
-// package data). Returns a data frame of geolocation data related to each 
-// input string.
+// each one through get_locations() in a loop. Returns a data frame of 
+// geolocation data related to each input string.
 // [[Rcpp::export]]
 DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
