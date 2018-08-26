@@ -19,6 +19,7 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   
   std::unordered_map<std::string, int> substr_map;
   std::string matches;
+  std::string curr_cn_str;
   
   CharacterVector prov_str_out = CharacterVector(cn_strings_len, NA_STRING);
   CharacterVector city_str_out = CharacterVector(cn_strings_len, NA_STRING);
@@ -30,7 +31,7 @@ DataFrame cpp_geo_locate(const CharacterVector &cn_strings) {
   // Loop over cn_strings, get geolocations and geocodes for each string.
   for(int i = 0; i < cn_strings_len; ++i) {
     if(!CharacterVector::is_na(cn_strings[i])) {
-      const std::string &curr_cn_str = as<std::string>(cn_strings[i]);
+      curr_cn_str = as<std::string>(cn_strings[i]);
       get_locations(curr_cn_str, substr_map, matches, 
                     prov_str_out, city_str_out, cnty_str_out, 
                     prov_int_out, city_int_out, cnty_int_out, 
