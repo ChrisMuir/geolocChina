@@ -339,14 +339,12 @@ void substring_lookup_city_w_code(const int &parent_code,
   // Clear string "matches", this will house the output string value.
   matches.clear();
   int min_seen = cn_str_len;
-  //std::string pc_str = std::to_string(parent_code);
   std::string pc_str = supp_pkg_data::containers.int_to_str_map[parent_code];
   std::string curr_city_code;
   
   for(int i = 0; i < supp_pkg_data::city_dd_len; ++i) {
     if(substr_map.count(raw_pkg_data::city_dd_strings[i]) > 0 && 
        substr_map[raw_pkg_data::city_dd_strings[i]] < min_seen) {
-      //curr_city_code = std::to_string(raw_pkg_data::city_dd_codes[i]);
       curr_city_code = supp_pkg_data::containers.int_to_str_map[raw_pkg_data::city_dd_codes[i]];
       if(pc_str == curr_city_code.substr(0, 2)) {
         matches = raw_pkg_data::city_dd_strings[i];
@@ -372,7 +370,6 @@ void substring_lookup_cnty_w_code(const int &parent_code,
   // Clear string "matches", this will house the output string value.
   matches.clear();
   int min_seen = cn_str_len;
-  //std::string pc_str = std::to_string(parent_code);
   std::string pc_str = supp_pkg_data::containers.int_to_str_map[parent_code];
   int pc_str_len = pc_str.size();
   std::string curr_cnty_code;
@@ -380,7 +377,6 @@ void substring_lookup_cnty_w_code(const int &parent_code,
   for(int i = 0; i < supp_pkg_data::cnty_dd_len; ++i) {
     if(substr_map.count(raw_pkg_data::cnty_dd_strings[i]) > 0 && 
        substr_map[raw_pkg_data::cnty_dd_strings[i]] < min_seen) {
-      //curr_cnty_code = std::to_string(raw_pkg_data::cnty_dd_codes[i]);
       curr_cnty_code = supp_pkg_data::containers.int_to_str_map[raw_pkg_data::cnty_dd_codes[i]];
       if(pc_str == curr_cnty_code.substr(0, pc_str_len)) {
         matches = raw_pkg_data::cnty_dd_strings[i];
@@ -396,7 +392,6 @@ void substring_lookup_cnty_w_code(const int &parent_code,
 
 // Given an int, return a portion of the digits (a "substring" of int).
 int substr_int(const int &x, const int &start, const int &out_len) {
-  //std::string x_str = std::to_string(x);
   std::string x_str = supp_pkg_data::containers.int_to_str_map[x];
   return(atoi(x_str.substr(start, out_len).c_str()));
 }
