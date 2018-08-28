@@ -110,10 +110,12 @@ base_str <- "工业路25号"
 #### No matches
 
 ``` r
-geo_locate(base_str)
-#>     location province city county province_code city_code county_code
-#> 1 工业路25号     <NA> <NA>   <NA>            NA        NA          NA
+knitr::kable(geo_locate(base_str))
 ```
+
+| location   | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 工业路25号 | NA       | NA   | NA     |              NA|          NA|            NA|
 
 #### Province match
 
@@ -121,12 +123,12 @@ Add a province to the `base_str`.
 
 ``` r
 x <- paste0("浙江省", base_str)
-geo_locate(x)
-#>           location province city county province_code city_code
-#> 1 浙江省工业路25号     浙江 <NA>   <NA>            33        NA
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location         | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省工业路25号 | 浙江     | NA   | NA     |              33|          NA|            NA|
 
 #### Province and city match
 
@@ -134,12 +136,12 @@ Add a province and a city that exists within the province to the `base_str`.
 
 ``` r
 x <- paste0("浙江省", "杭州市", base_str)
-geo_locate(x)
-#>                 location province city county province_code city_code
-#> 1 浙江省杭州市工业路25号     浙江 杭州   <NA>            33      3301
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location               | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省杭州市工业路25号 | 浙江     | 杭州 | NA     |              33|        3301|            NA|
 
 It's important to note that, within the return data, the first two digits of the `city_code` match the `province_code`.
 
@@ -147,12 +149,12 @@ On the other hand, if we try to combine a province with a city that does NOT exi
 
 ``` r
 x <- paste0("浙江省", "大连市", base_str)
-geo_locate(x)
-#>                 location province city county province_code city_code
-#> 1 浙江省大连市工业路25号     浙江 <NA>   <NA>            33        NA
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location               | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省大连市工业路25号 | 浙江     | NA   | NA     |              33|          NA|            NA|
 
 This is because the functions attempt to establish a provincial match first, and then any city matches found must have an associated geocode that contain leading digits that match the provincial geocode. Here is the package data observation of the matching city substring.
 
@@ -170,23 +172,23 @@ Add a logical province, city, and county to `base_str`.
 
 ``` r
 x <- paste0("浙江省", "杭州市余", "余杭区", base_str)
-geo_locate(x)
-#>                         location province city county province_code
-#> 1 浙江省杭州市余余杭区工业路25号     浙江 杭州   余杭            33
-#>   city_code county_code
-#> 1      3301      330110
+knitr::kable(geo_locate(x))
 ```
+
+| location                       | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-------------------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省杭州市余余杭区工业路25号 | 浙江     | 杭州 | 余杭   |              33|        3301|        330110|
 
 Just like in the example above, if we try to combine a county with a city that does NOT exist within the city, the `county` variables will return `NA`
 
 ``` r
 x <- paste0("浙江省", "杭州市余", "甘井子区", base_str)
-geo_locate(x)
-#>                           location province city county province_code
-#> 1 浙江省杭州市余甘井子区工业路25号     浙江 杭州   <NA>            33
-#>   city_code county_code
-#> 1      3301          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location                         | province | city | county |  province\_code|  city\_code|  county\_code|
+|:---------------------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省杭州市余甘井子区工业路25号 | 浙江     | 杭州 | NA     |              33|        3301|            NA|
 
 ``` r
 # Print the pkg data observation related to county "甘井子"
@@ -201,12 +203,12 @@ Add a city to `base_str`.
 
 ``` r
 x <- x <- paste0("杭州市余", base_str)
-geo_locate(x)
-#>             location province city county province_code city_code
-#> 1 杭州市余工业路25号     浙江 杭州   <NA>            33      3301
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location           | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 杭州市余工业路25号 | 浙江     | 杭州 | NA     |              33|        3301|            NA|
 
 `geo_locate()` will return a matched province and city. This is because it will first look for a province match and return `NA`. It then looks for a city match (in this example, a city match is found). If a city match is found AND the province is `NA`, the province output values will be inferred from the city geocode. In this example, the matching city geocode is `3301`, the first two digits are taken and assigned as the matching provincial geocode. Then that geocode `33` is used to fetch a corresponding matching province (`浙江`) from the package data.
 
@@ -216,12 +218,12 @@ Add a county to `base_str`
 
 ``` r
 x <- paste0("余杭区", base_str)
-geo_locate(x)
-#>           location province city county province_code city_code
-#> 1 余杭区工业路25号     浙江 杭州   余杭            33      3301
-#>   county_code
-#> 1      330110
+knitr::kable(geo_locate(x))
 ```
+
+| location         | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 余杭区工业路25号 | 浙江     | 杭州 | 余杭   |              33|        3301|        330110|
 
 `geo_locate()` will return a matched province, city, and county. Just like in the last example, when the function cannot find a match for province and city, but a county match is found, the province and city output info will be inferred from the county geocode.
 
@@ -231,12 +233,12 @@ As part of the internal package data, `geolocChina` ships with a list of countie
 
 ``` r
 x <- paste0("北市区", base_str)
-geo_locate(x)
-#>           location province city county province_code city_code
-#> 1 北市区工业路25号     河北 保定   <NA>            13      1306
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location         | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 北市区工业路25号 | 河北     | 保定 | NA     |              13|        1306|            NA|
 
 #### Two different regions of the same type
 
@@ -244,12 +246,12 @@ If there are multiple matches of the same region type in an input string (say, m
 
 ``` r
 x <- "浙江省杭州市辽宁路25号"
-geo_locate(x)
-#>                 location province city county province_code city_code
-#> 1 浙江省杭州市辽宁路25号     浙江 杭州   <NA>            33      3301
-#>   county_code
-#> 1          NA
+knitr::kable(geo_locate(x))
 ```
+
+| location               | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 浙江省杭州市辽宁路25号 | 浙江     | 杭州 | NA     |              33|        3301|            NA|
 
 The logic behind this comes from the fact that Chinese address/location strings typically have this structure
 
@@ -259,14 +261,16 @@ Reading left to right, the geographic resolution starts large and gets more and 
 
 Using `四川省南充市阆中市公园路63号` as an example, we have
 
--   province:..**四川省** 南充市阆中市公园路63号
--   city:......四川省 **南充市** 阆中市公园路63号
--   county:....四川省南充市 **阆中市** 公园路63号
+| Region   | String                             |
+|----------|------------------------------------|
+| province | **四川省** 南充市阆中市公园路63号  |
+| city     | 四川省 **南充市** 阆中市公园路63号 |
+| county   | 四川省南充市 **阆中市** 公园路63号 |
 
 ``` r
-geo_locate("四川省南充市阆中市公园路63号")
-#>                       location province city county province_code
-#> 1 四川省南充市阆中市公园路63号     四川 南充   阆中            51
-#>   city_code county_code
-#> 1      5113      511381
+knitr::kable(geo_locate("四川省南充市阆中市公园路63号"))
 ```
+
+| location                     | province | city | county |  province\_code|  city\_code|  county\_code|
+|:-----------------------------|:---------|:-----|:-------|---------------:|-----------:|-------------:|
+| 四川省南充市阆中市公园路63号 | 四川     | 南充 | 阆中   |              51|        5113|        511381|
