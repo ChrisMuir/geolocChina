@@ -79,8 +79,13 @@ void get_locations(const std::string &cn_str,
   // If City is NA and County is NA, try to fill in the City code/string from
   // the county_2015 vectors.
   if(curr_cnty_code == NA_INTEGER && curr_city_code == NA_INTEGER) {
-    substring_lookup_cnty_2015(matches, substr_map, cn_str_len, map_end, 
-                               map_iter, set_iter);
+    if(curr_prov_code == NA_INTEGER) {
+      substring_lookup_cnty_2015(matches, substr_map, cn_str_len, map_end, 
+                                 map_iter, set_iter);
+    } else {
+      substring_lookup_cnty_2015_w_code(curr_prov_code, matches, substr_map, 
+                                        cn_str_len);
+    }
     
     if(matches.size() > 0) {
       int init_code = as_geocode_cnty_2015(matches);
@@ -326,6 +331,7 @@ void substring_lookup_cnty_2015(std::string &matches,
   }
 }
 
+
 // Lookup each package data City string in the substr_map. Find the 
 // City string with the smallest associated integer in substr_map (this 
 // is the index of the first char of the City string in the input 
@@ -357,6 +363,7 @@ void substring_lookup_city_w_code(const int &parent_code,
   }
 }
 
+
 // Lookup each package data County string in the substr_map. Find the 
 // County string with the smallest associated integer in substr_map (this 
 // is the index of the first char of the County string in the input 
@@ -381,6 +388,40 @@ void substring_lookup_cnty_w_code(const int &parent_code,
       if(pc_str == curr_cnty_code.substr(0, pc_str_len)) {
         matches = raw_pkg_data::cnty_dd_strings[i];
         min_seen = substr_map[raw_pkg_data::cnty_dd_strings[i]];
+        if(min_seen == 0) {
+          break;
+        }
+      }
+    }
+  }
+}
+
+
+// Lookup each package data county_2015 string in the substr_map. Find the 
+// county_2015 string with the smallest associated integer in substr_map (this 
+// is the index of the first char of the County string in the input 
+// cn_str). Also takes as input a parent geocode, used for validating the 
+// matching County string...when a county_2015 string match is found, the 
+// leading digits of it's associated goecode must match the input parent 
+// geocode.
+void substring_lookup_cnty_2015_w_code(const int &parent_code, 
+                                       std::string &matches, 
+                                       std::unordered_map<std::string, int> &substr_map, 
+                                       const int &cn_str_len) {
+  // Clear string "matches", this will house the output string value.
+  matches.clear();
+  int min_seen = cn_str_len;
+  std::string pc_str = supp_pkg_data::containers.int_to_str_map[parent_code];
+  int pc_str_len = pc_str.size();
+  std::string curr_cnty_code;
+  
+  for(int i = 0; i < supp_pkg_data::cnty_dd_2015_len; ++i) {
+    if(substr_map.count(raw_pkg_data::cnty_dd_strings_2015[i]) > 0 && 
+       substr_map[raw_pkg_data::cnty_dd_strings_2015[i]] < min_seen) {
+      curr_cnty_code = supp_pkg_data::containers.int_to_str_map[raw_pkg_data::cnty_dd_codes_2015[i]];
+      if(pc_str == curr_cnty_code.substr(0, pc_str_len)) {
+        matches = raw_pkg_data::cnty_dd_strings_2015[i];
+        min_seen = substr_map[raw_pkg_data::cnty_dd_strings_2015[i]];
         if(min_seen == 0) {
           break;
         }

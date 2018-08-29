@@ -57,6 +57,11 @@ void substring_lookup_cnty_w_code(const int &parent_code,
                                   std::unordered_map<std::string, int> &substr_map, 
                                   const int &cn_str_len);
 
+void substring_lookup_cnty_2015_w_code(const int &parent_code, 
+                                       std::string &matches, 
+                                       std::unordered_map<std::string, int> &substr_map, 
+                                       const int &cn_str_len);
+
 void get_all_substr(const std::string &input, 
                     std::unordered_map<std::string, int> &substr_map);
 
