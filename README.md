@@ -229,7 +229,7 @@ knitr::kable(geo_locate(x))
 
 #### 2015 county package data
 
-As part of the internal package data, `geolocChina` ships with a list of counties (and corresponding geocodes) that existed in 2015 and do not currently exist, due to rezoning and county/district lines being redrawn. `geo_locate()` will only use the 2015 county data if there was no provincial, city, nor county matches found. And if a match is found in the 2015 county data, the function will infer the output values for province and city, but will leave the county output values as `NA` (as opposed to returning county values that do not currently exist).
+As part of the internal package data, `geolocChina` ships with a list of counties (and corresponding geocodes) that existed in 2015 and do not currently exist, due to rezoning and county/district lines being redrawn. `geo_locate()` will only use the 2015 county data if there was no city match found. And if a match is found in the 2015 county data, the function will infer the output values for province and/or city, but will leave the county output values as `NA` (as opposed to returning county values that do not currently exist).
 
 ``` r
 x <- paste0("北市区", base_str)
