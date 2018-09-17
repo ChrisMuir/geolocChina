@@ -15,7 +15,7 @@ geolocChina
 
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
-R package that takes Chinese location/address stings as input, and returns geolocation data for each input string.
+R package that takes Chinese location/address stings as input and returns geolocation data for each input string. This package does not rely on an external API service to perform geocoding (for info on how it works, see the `How It Works` section of the `README` below).
 
 The functions are designed to work with business name strings and address strings. For each input string, the following values are returned: `Province`, `City`, `County`, `Provincial geocode`, `City geocode`, and `County geocode`. Values are returned as a tidy data frame.
 
