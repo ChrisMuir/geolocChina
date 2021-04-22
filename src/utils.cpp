@@ -189,8 +189,8 @@ void substring_lookup_prov(std::string &matches,
     // Else, if the size of the substr_map is greater than the number of 
     // package data Province strings, iterate over the package data Province 
     // strings.
-    std::unordered_set<std::string>::iterator prov_end = supp_pkg_data::containers.prov_set.end();
-    for(set_iter = supp_pkg_data::containers.prov_set.begin(); set_iter != prov_end; ++set_iter) {
+    auto prov_end = supp_pkg_data::containers.prov_set.end();
+    for(auto set_iter = supp_pkg_data::containers.prov_set.begin(); set_iter != prov_end; ++set_iter) {
       if(substr_map.count(*set_iter) > 0 && substr_map[*set_iter] < min_seen) {
         matches = *set_iter;
         min_seen = substr_map[*set_iter];
@@ -231,8 +231,8 @@ void substring_lookup_city(std::string &matches,
   } else {
     // Else, if the size of the substr_map is greater than the number of 
     // package data City strings, iterate over the package data City strings.
-    std::unordered_set<std::string>::iterator city_end = supp_pkg_data::containers.city_set.end();
-    for(set_iter = supp_pkg_data::containers.city_set.begin(); set_iter != city_end; ++set_iter) {
+    auto city_end = supp_pkg_data::containers.city_set.end();
+    for(auto set_iter = supp_pkg_data::containers.city_set.begin(); set_iter != city_end; ++set_iter) {
       if(substr_map.count(*set_iter) > 0 && substr_map[*set_iter] < min_seen) {
         matches = *set_iter;
         min_seen = substr_map[*set_iter];
@@ -274,8 +274,8 @@ void substring_lookup_cnty(std::string &matches,
     // Else, if the size of the substr_map is greater than the number of 
     // package data County strings, iterate over the package data County 
     // strings.
-    std::unordered_set<std::string>::iterator cnty_end = supp_pkg_data::containers.cnty_set.end();
-    for(set_iter = supp_pkg_data::containers.cnty_set.begin(); set_iter != cnty_end; ++set_iter) {
+    auto cnty_end = supp_pkg_data::containers.cnty_set.end();
+    for(auto set_iter = supp_pkg_data::containers.cnty_set.begin(); set_iter != cnty_end; ++set_iter) {
       if(substr_map.count(*set_iter) > 0 && substr_map[*set_iter] < min_seen) {
         matches = *set_iter;
         min_seen = substr_map[*set_iter];
@@ -318,8 +318,8 @@ void substring_lookup_cnty_2015(std::string &matches,
     // Else, if the size of the substr_map is greater than the number of 
     // package data County 2015 strings, iterate over the package data 
     // County 2015 strings.
-    std::unordered_set<std::string>::iterator cnty_end = supp_pkg_data::containers.cnty_2015_set.end();
-    for(set_iter = supp_pkg_data::containers.cnty_2015_set.begin(); set_iter != cnty_end; ++set_iter) {
+    auto cnty_end = supp_pkg_data::containers.cnty_2015_set.end();
+    for(auto set_iter = supp_pkg_data::containers.cnty_2015_set.begin(); set_iter != cnty_end; ++set_iter) {
       if(substr_map.count(*set_iter) > 0 && substr_map[*set_iter] < min_seen) {
         matches = *set_iter;
         min_seen = substr_map[*set_iter];
