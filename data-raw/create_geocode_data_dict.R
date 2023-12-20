@@ -19,7 +19,6 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   jsonlite::fromJSON()
 Sys.sleep(2)
 res <- res[!nchar(res$name) < 2, ]
-res$code <- as.integer(res$code)
 names_edited <- gsub("市|省|自治区", "", res$name)
 idx <- which(nchar(names_edited) < 2)
 if (length(idx) == 0) {
@@ -42,7 +41,6 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   jsonlite::fromJSON()
 Sys.sleep(2)
 res <- res[!nchar(res$name) < 2, ]
-res$code <- as.integer(res$code)
 names_edited <- gsub("市|自治区|盟|自治州|地区", "", res$name)
 idx <- which(nchar(names_edited) < 2)
 if (length(idx) == 0) {
@@ -65,7 +63,6 @@ res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisi
   jsonlite::fromJSON()
 Sys.sleep(2)
 res <- res[!nchar(res$name) < 2, ]
-res$code <- as.integer(res$code)
 names_edited <- gsub("地区|区|县|市|自治", "", res$name)
 idx <- which(nchar(names_edited) < 2)
 if (length(idx) == 0) {
