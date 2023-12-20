@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cpp_geo_locate
 DataFrame cpp_geo_locate(const CharacterVector& cn_strings);
 RcppExport SEXP _geolocChina_cpp_geo_locate(SEXP cn_stringsSEXP) {
