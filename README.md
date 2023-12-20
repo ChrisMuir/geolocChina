@@ -39,7 +39,7 @@ Install from GitHub
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ChrisMuir/geolocChina")
+devtools::install_github("ChrisMuir/geolocChina", INSTALL_opts="--no-staged-install")
 ```
 
 ## Example Usage
