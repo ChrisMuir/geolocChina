@@ -27,13 +27,13 @@ if (length(idx) == 0) {
   res$name[-idx] <- names_edited[-idx]
 }
 
-file_conn <- file("./inst/extdata/prov_strings.txt")
-writeLines(res$name, file_conn)
-close(file_conn)
-
-file_conn <- file("./inst/extdata/prov_codes.txt")
-writeLines(res$code, file_conn)
-close(file_conn)
+file_name <- "./inst/extdata/prov_array.txt"
+for (i in 1:length(res$name)) {
+  write("{", file_name, append = TRUE)
+  write(paste0('"', res$name[i], '",'), file_name, append = TRUE)
+  write(paste0(res$code[i], ","), file_name, append = TRUE)
+  write("},", file_name, append = TRUE)
+}
 
 # City data
 res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/cities.json") %>% 
@@ -49,13 +49,14 @@ if (length(idx) == 0) {
   res$name[-idx] <- names_edited[-idx]
 }
 
-file_conn <- file("./inst/extdata/city_strings.txt")
-writeLines(res$name, file_conn)
-close(file_conn)
-
-file_conn <- file("./inst/extdata/city_codes.txt")
-writeLines(res$code, file_conn)
-close(file_conn)
+file_name <- "./inst/extdata/city_array.txt"
+for (i in 1:length(res$name)) {
+  write("{", file_name, append = TRUE)
+  write(paste0('"', res$name[i], '",'), file_name, append = TRUE)
+  write(paste0(res$code[i], ","), file_name, append = TRUE)
+  write(paste0(res$provinceCode[i], ","), file_name, append = TRUE)
+  write("},", file_name, append = TRUE)
+}
 
 # County data
 res <- httr::GET("https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/areas.json") %>% 
@@ -71,10 +72,14 @@ if (length(idx) == 0) {
   res$name[-idx] <- names_edited[-idx]
 }
 
-file_conn <- file("./inst/extdata/cnty_strings.txt")
-writeLines(res$name, file_conn)
-close(file_conn)
+file_name <- "./inst/extdata/county_array.txt"
+for (i in 1:length(res$name)) {
+  write("{", file_name, append = TRUE)
+  write(paste0('"', res$name[i], '",'), file_name, append = TRUE)
+  write(paste0(res$code[i], ","), file_name, append = TRUE)
+  write(paste0(res$cityCode[i], ","), file_name, append = TRUE)
+  write(paste0(res$provinceCode[i], ","), file_name, append = TRUE)
+  write("},", file_name, append = TRUE)
+}
 
-file_conn <- file("./inst/extdata/cnty_codes.txt")
-writeLines(res$code, file_conn)
-close(file_conn)
+
